@@ -85,6 +85,8 @@ export interface Sessao {
   token: string;
   role: Role;
   nome: string;
+  /** id do PacienteCompleto vinculado a este usuário, quando role === 'usuario' */
+  pacienteId?: string;
 }
 
 export interface Credenciais {

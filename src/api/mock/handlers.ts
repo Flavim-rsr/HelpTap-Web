@@ -63,8 +63,8 @@ export function filtrarPacientePorRole(p: PacienteCompleto, role: Role): Pacient
 export const LATENCIA_MS = import.meta.env.MODE === 'test' ? 0 : 400;
 export const delay = () => new Promise((r) => setTimeout(r, LATENCIA_MS));
 
-function novaSessao(role: Role, nome: string): Sessao {
-  return { token: `mock-jwt-${role}-${Date.now()}`, role, nome };
+function novaSessao(role: Role, nome: string, pacienteId?: string): Sessao {
+  return { token: `mock-jwt-${role}-${Date.now()}`, role, nome, pacienteId };
 }
 
 export async function mockLogin(role: Role, credenciais: Credenciais): Promise<Sessao> {
@@ -73,7 +73,7 @@ export async function mockLogin(role: Role, credenciais: Credenciais): Promise<S
     (u) => u.role === role && u.email === credenciais.email && u.senha === credenciais.senha,
   );
   if (!usuario) throw new Error('E-mail ou senha inválidos');
-  return novaSessao(usuario.role, usuario.nome);
+  return novaSessao(usuario.role, usuario.nome, usuario.pacienteId);
 }
 
 /**
@@ -100,11 +100,18 @@ export async function mockCadastro(role: Role, dados: CadastroProfissional): Pro
 /** Trilha de auditoria exigida pela LGPD — entidade AccessLog do artigo. */
 export const accessLogs: AccessLog[] = [];
 
-export async function mockGetPaciente(uuid: string, role: Role): Promise<PacienteView> {
+export async function mockGetPaciente(
+  uuid: string,
+  role: Role,
+  pacienteId?: string,
+): Promise<PacienteView> {
   await delay();
   const wearable = wearablesMock.find((w) => w.uuid === uuid);
   const paciente = wearable && pacientesMock.find((p) => p.id === wearable.pacienteId);
   if (!wearable || !paciente) throw new Error('PULSEIRA_NAO_ENCONTRADA');
+  if (role === 'usuario' && wearable.pacienteId !== pacienteId) {
+    throw new Error('ACESSO_NEGADO');
+  }
   accessLogs.push({
     wearableId: wearable.uuid,
     accessedAt: new Date().toISOString(),

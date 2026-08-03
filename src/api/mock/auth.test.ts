@@ -19,6 +19,11 @@ test('login exige que o e-mail pertença ao perfil escolhido', async () => {
   ).rejects.toThrow('E-mail ou senha inválidos');
 });
 
+test('login como titular devolve sessão com pacienteId', async () => {
+  const s = await mockLogin('usuario', { email: 'rafael@helptap.com', senha: '123456' });
+  expect(s.pacienteId).toBe('p1');
+});
+
 test('validarRegistro aceita CRM no formato CRM/UF 00000 e registros funcionais numéricos', () => {
   expect(validarRegistro('medico', 'CRM/SP 12345')).toBe(true);
   expect(validarRegistro('medico', '12345')).toBe(false);

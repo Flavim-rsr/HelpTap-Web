@@ -5,13 +5,21 @@ export interface UsuarioMock {
   senha: string;
   role: Role;
   nome: string;
+  /** id do PacienteCompleto vinculado, quando role === 'usuario' */
+  pacienteId?: string;
 }
 
 export const usuariosMock: UsuarioMock[] = [
   { email: 'medico@helptap.com', senha: '123456', role: 'medico', nome: 'Dra. Carla Mendes' },
   { email: 'policial@helptap.com', senha: '123456', role: 'policial', nome: 'Sgt. Paulo Lima' },
   { email: 'bombeiro@helptap.com', senha: '123456', role: 'bombeiro', nome: 'Cb. Marcos Dias' },
-  { email: 'rafael@helptap.com', senha: '123456', role: 'usuario', nome: 'Rafael Andrade' },
+  {
+    email: 'rafael@helptap.com',
+    senha: '123456',
+    role: 'usuario',
+    nome: 'Rafael Andrade',
+    pacienteId: 'p1',
+  },
 ];
 
 export const pacientesMock: PacienteCompleto[] = [

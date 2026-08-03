@@ -34,7 +34,7 @@ export default function Pulseira() {
     if (!sessao) return;
     let ativo = true;
     setEstado('carregando');
-    getPacienteByUuid(uuid, sessao.role)
+    getPacienteByUuid(uuid, sessao.role, sessao.pacienteId)
       .then((p) => {
         if (ativo) {
           setPaciente(p);
