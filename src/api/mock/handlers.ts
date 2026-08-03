@@ -1,4 +1,5 @@
 import type {
+  AccessLog,
   CadastroProfissional,
   Credenciais,
   PacienteCompleto,
@@ -6,7 +7,7 @@ import type {
   Role,
   Sessao,
 } from '../../types';
-import { usuariosMock } from './data';
+import { pacientesMock, usuariosMock, wearablesMock } from './data';
 
 /**
  * Espelha a filtragem que o Spring Security + camada de serviços fará no
@@ -94,4 +95,21 @@ export async function mockCadastro(role: Role, dados: CadastroProfissional): Pro
   }
   usuariosMock.push({ email: dados.email, senha: dados.senha, role, nome: dados.nome });
   return novaSessao(role, dados.nome);
+}
+
+/** Trilha de auditoria exigida pela LGPD — entidade AccessLog do artigo. */
+export const accessLogs: AccessLog[] = [];
+
+export async function mockGetPaciente(uuid: string, role: Role): Promise<PacienteView> {
+  await delay();
+  const wearable = wearablesMock.find((w) => w.uuid === uuid);
+  const paciente = wearable && pacientesMock.find((p) => p.id === wearable.pacienteId);
+  if (!wearable || !paciente) throw new Error('PULSEIRA_NAO_ENCONTRADA');
+  accessLogs.push({
+    wearableId: wearable.uuid,
+    accessedAt: new Date().toISOString(),
+    role,
+    location: 'São Paulo - SP (simulado)',
+  });
+  return filtrarPacientePorRole(paciente, role);
 }
