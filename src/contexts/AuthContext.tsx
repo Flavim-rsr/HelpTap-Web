@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { Sessao } from '../types';
 
 const CHAVE_SESSAO = 'helptap.sessao';
+export const CHAVE_DESTINO = 'helptap.destino';
 
 interface AuthContextValue {
   sessao: Sessao | null;
@@ -11,11 +12,19 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function lerSessaoSalva(): Sessao | null {
+  const salvo = sessionStorage.getItem(CHAVE_SESSAO);
+  if (!salvo) return null;
+  try {
+    return JSON.parse(salvo) as Sessao;
+  } catch {
+    // valor corrompido em sessionStorage não deve derrubar a aplicação
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [sessao, setSessao] = useState<Sessao | null>(() => {
-    const salvo = sessionStorage.getItem(CHAVE_SESSAO);
-    return salvo ? (JSON.parse(salvo) as Sessao) : null;
-  });
+  const [sessao, setSessao] = useState<Sessao | null>(lerSessaoSalva);
 
   const entrar = (s: Sessao) => {
     sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(s));

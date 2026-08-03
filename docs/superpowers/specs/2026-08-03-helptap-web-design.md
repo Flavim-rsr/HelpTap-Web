@@ -27,6 +27,10 @@ SPA que, a partir da leitura de uma pulseira NFC (URL com UUID), apresenta ao pr
 
 React 18 + Vite + TypeScript + Tailwind CSS + React Router. Testes com Vitest + Testing Library.
 
+> Nota de implementação: o projeto foi efetivamente construído com **React 19** (a versão
+> estável mais recente no momento), em vez do React 18 mencionado acima na concepção inicial.
+> Nenhuma decisão de arquitetura descrita neste documento depende da diferença entre as versões.
+
 **Decisões e alternativas consideradas:**
 - **Service layer com mocks** (escolhido) vs. MSW: funções tipadas em `src/api/` cujo miolo hoje retorna mocks; na integração, só o interior das funções muda para `fetch` real (`VITE_API_URL`). Mais simples de entender e debugar que interceptação via MSW.
 - **Tailwind CSS** (escolhido) vs. CSS puro: o protótipo veio do Lovable (que usa Tailwind); replicação rápida de gradientes, cartões e cores por perfil com design tokens.
@@ -75,7 +79,7 @@ A filtragem por perfil acontece **no mock handler** (simulando o back-end), nunc
 |---|---|---|---|---|
 | Médico | ✔ | ✔ | completa (incl. observações) | ✔ com criticidade |
 | Policial | ✔ (CPF, endereço) | ✔ | — | — |
-| Bombeiro/Socorrista | ✔ (sem CPF) | — | essencial | ✔ com criticidade |
+| Bombeiro/Socorrista | ✔ (sem CPF) | — | essencial (com observações) | ✔ com criticidade |
 | Usuário (titular) | próprios dados completos | ✔ | completa | ✔ |
 
 Os componentes renderizam o que chega — a troca pelo Spring Security não altera tela nenhuma. Cada leitura grava um `AccessLog` mockado (auditoria/LGPD, conforme o artigo).

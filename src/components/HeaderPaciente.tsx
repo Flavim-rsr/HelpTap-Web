@@ -33,6 +33,7 @@ export function HeaderPaciente({ nome, idade, telefoneResponsavel }: Props) {
         )}
         <button
           onClick={() => setEnviada(true)}
+          aria-live="polite"
           className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white hover:opacity-90"
         >
           <MapPin aria-hidden className="size-4" />

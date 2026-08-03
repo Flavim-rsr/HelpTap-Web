@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BadgeCheck, Lock, Mail, Phone, UserRound } from 'lucide-react';
 import { cadastrar } from '../api/auth';
-import { useAuth } from '../contexts/AuthContext';
+import { CHAVE_DESTINO, useAuth } from '../contexts/AuthContext';
 import { InputComIcone } from '../components/InputComIcone';
 import { BotaoPerfil } from '../components/BotaoPerfil';
 import { PERFIL_CONFIG, PERFIS_CADASTRO, ehPerfil } from '../styles/perfis';
@@ -22,7 +22,7 @@ export default function Cadastro() {
 
   const campo = (nome: keyof typeof form) => ({
     value: form[nome],
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange: (e: ChangeEvent<HTMLInputElement>) =>
       setForm((f) => ({ ...f, [nome]: e.target.value })),
   });
 
@@ -34,8 +34,8 @@ export default function Cadastro() {
     try {
       const sessao = await cadastrar(perfil, form);
       entrar(sessao);
-      const destino = sessionStorage.getItem('helptap.destino');
-      sessionStorage.removeItem('helptap.destino');
+      const destino = sessionStorage.getItem(CHAVE_DESTINO);
+      sessionStorage.removeItem(CHAVE_DESTINO);
       navigate(destino ?? '/leitura', { replace: true });
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro ao cadastrar');
@@ -63,7 +63,8 @@ export default function Cadastro() {
           <InputComIcone label="Nome Completo" Icone={UserRound} required placeholder="Seu nome completo" {...campo('nome')} />
           <InputComIcone label="Telefone" Icone={Phone} required placeholder="(00) 00000-0000" {...campo('telefone')} />
           <InputComIcone
-            label={cfg.registroLabel ?? 'Registro'}
+            // todos os perfis de PERFIS_CADASTRO definem registroLabel (só 'usuario' não define)
+            label={cfg.registroLabel!}
             Icone={BadgeCheck}
             required
             placeholder={cfg.registroPlaceholder}

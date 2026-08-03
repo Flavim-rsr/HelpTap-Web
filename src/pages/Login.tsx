@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Lock, Mail } from 'lucide-react';
 import { login } from '../api/auth';
-import { useAuth } from '../contexts/AuthContext';
+import { CHAVE_DESTINO, useAuth } from '../contexts/AuthContext';
 import { InputComIcone } from '../components/InputComIcone';
 import { BotaoPerfil } from '../components/BotaoPerfil';
 import { PERFIL_CONFIG, ehPerfil } from '../styles/perfis';
@@ -29,8 +29,8 @@ export default function Login() {
     try {
       const sessao = await login(perfil, { email, senha });
       entrar(sessao);
-      const destino = sessionStorage.getItem('helptap.destino');
-      sessionStorage.removeItem('helptap.destino');
+      const destino = sessionStorage.getItem(CHAVE_DESTINO);
+      sessionStorage.removeItem(CHAVE_DESTINO);
       navigate(destino ?? '/leitura', { replace: true });
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro ao entrar');
