@@ -41,7 +41,5 @@ test('cadastro válido cria a conta e navega para /leitura', async () => {
   await userEvent.type(screen.getByLabelText('E-mail'), 'nova@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), 'senha123');
   await userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
-  // /leitura ainda não existe (Task 11) -> por ora o 404 comprova a navegação;
-  // a Task 11 troca esta asserção por: await screen.findByText(/leitura de pulseira/i)
-  expect(await screen.findByText(/página não encontrada/i)).toBeInTheDocument();
+  expect(await screen.findByText(/leitura de pulseira/i)).toBeInTheDocument();
 });
