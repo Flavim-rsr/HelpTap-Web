@@ -22,16 +22,19 @@ test('policial recebe SOMENTE identificação civil — nunca dados clínicos', 
   expect(v.alergias).toBeUndefined();
   expect(v.doencas).toBeUndefined();
   expect(v.transtornos).toBeUndefined();
+  expect(v.deficiencias).toBeUndefined();
 });
 
 test('bombeiro recebe ficha essencial sem CPF, sem filiação, sem dados sensíveis', () => {
   const v = filtrarPacientePorRole(rafael, 'bombeiro');
   expect(v.identificacao.cpf).toBeUndefined();
   expect(v.identificacao.mae).toBeUndefined();
+  expect(v.identificacao.pai).toBeUndefined();
   expect(v.identificacao.endereco).toBe(rafael.endereco);
   expect(v.fichaMedica?.tipoSanguineo).toBe(rafael.fichaMedica.tipoSanguineo);
   expect(v.alergias).toHaveLength(rafael.alergias.length);
   expect(v.doencas?.every((d) => !d.sensivel)).toBe(true);
+  expect(v.deficiencias).toBeDefined();
   expect(filtrarPacientePorRole(anaClara, 'bombeiro').transtornos).toBeUndefined();
 });
 
