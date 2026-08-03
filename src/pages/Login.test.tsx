@@ -30,13 +30,12 @@ test('credenciais erradas mostram erro acessível', async () => {
 });
 
 test('login bem-sucedido navega para o destino guardado', async () => {
-  sessionStorage.setItem('helptap.destino', '/destino-teste');
+  sessionStorage.setItem('helptap.destino', '/pulseira/550e8400-e29b-41d4-a716-446655440001');
   renderEm('/login/medico');
   await userEvent.type(screen.getByLabelText('E-mail'), 'medico@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), '123456');
   await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
-  // /destino-teste não existe -> 404 comprova que a navegação ocorreu
-  expect(await screen.findByText(/página não encontrada/i)).toBeInTheDocument();
+  expect(await screen.findByText('Rafael Andrade')).toBeInTheDocument();
   expect(sessionStorage.getItem('helptap.destino')).toBeNull();
 });
 

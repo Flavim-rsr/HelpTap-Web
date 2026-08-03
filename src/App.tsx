@@ -3,6 +3,7 @@ import SelecaoPerfil from './pages/SelecaoPerfil';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Leitura from './pages/Leitura';
+import Pulseira from './pages/Pulseira';
 import NotFound from './pages/NotFound';
 import { RequireAuth } from './components/RequireAuth';
 
@@ -18,6 +19,14 @@ export default function App() {
           element={
             <RequireAuth>
               <Leitura />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/pulseira/:uuid"
+          element={
+            <RequireAuth>
+              <Pulseira />
             </RequireAuth>
           }
         />

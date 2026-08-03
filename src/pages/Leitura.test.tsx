@@ -32,9 +32,7 @@ test('submeter um código navega para /pulseira/:uuid', async () => {
   renderEm('/leitura');
   await userEvent.type(screen.getByLabelText('Código da pulseira'), 'abc-inexistente');
   await userEvent.click(screen.getByRole('button', { name: 'Abrir paciente' }));
-  // rota /pulseira ainda não existe (Task 12) -> 404 comprova a navegação;
-  // a Task 12 troca por: await screen.findByText(/pulseira não vinculada/i)
-  expect(await screen.findByText(/página não encontrada/i)).toBeInTheDocument();
+  expect(await screen.findByText(/pulseira não vinculada/i)).toBeInTheDocument();
 });
 
 test('sem sessão, /leitura redireciona para a seleção de perfil', () => {
