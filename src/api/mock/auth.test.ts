@@ -42,3 +42,15 @@ test('cadastro com registro inválido rejeita; com registro válido cria conta e
   const login = await mockLogin('medico', { email: dados.email, senha: dados.senha });
   expect(login.nome).toBe('Dr. Novo');
 });
+
+test('cadastro rejeita com e-mail já cadastrado', async () => {
+  await expect(
+    mockCadastro('medico', {
+      nome: 'Dr. Falso',
+      email: 'medico@helptap.com',
+      telefone: '(16) 90000-0000',
+      senha: 'outrasenha',
+      registro: 'CRM/SP 99999',
+    }),
+  ).rejects.toThrow('E-mail já cadastrado');
+});
