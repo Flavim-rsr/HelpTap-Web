@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type React from 'react';
 
 interface Props {
   titulo: string;
-  Icone: LucideIcon;
+  Icone: React.ComponentType<{ className?: string }>;
   children: ReactNode;
 }
 

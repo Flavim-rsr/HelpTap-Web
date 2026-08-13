@@ -44,6 +44,8 @@ export interface PacienteView {
   nome: string;
   /** Ausente quando o backend não expõe a data de nascimento no perfil. */
   idade?: number;
+  /** Foto de perfil (data URI), quando o titular cadastrou uma. */
+  fotoUrl?: string;
   identificacao: Identificacao;
   fichaMedica?: FichaMedica;
   alergias?: Alergia[];

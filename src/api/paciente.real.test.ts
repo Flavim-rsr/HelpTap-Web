@@ -24,12 +24,21 @@ const RESPOSTA = {
   },
 };
 
-function stubFetch(body: unknown) {
-  const fetchMock = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    text: () => Promise.resolve(JSON.stringify(body)),
-  });
+const DADOS_BASICOS = { dateBirth: '2002-05-22', userPicture: 'data:image/jpeg;base64,Zm90bw==' };
+
+function stubFetch(body: unknown, basicos: unknown = DADOS_BASICOS) {
+  const fetchMock = vi
+    .fn()
+    .mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve(JSON.stringify(body)),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve(JSON.stringify(basicos)),
+    });
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
 }
@@ -53,7 +62,9 @@ test('mapeia a leitura profissional real para a visão do paciente', async () =>
     expect.objectContaining({ method: 'POST' }),
   );
   expect(paciente.nome).toBe('Rafael Andrade');
-  expect(paciente.idade).toBeUndefined();
+  expect(paciente.idade).toBeGreaterThanOrEqual(24);
+  expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
+  expect(fetchMock.mock.calls[1][0]).toBe('https://api.teste/api/users/7');
   expect(paciente.identificacao.telefoneResponsavel).toBe('(16) 99223-5555');
   expect(paciente.fichaMedica).toEqual({
     tipoSanguineo: 'O+',
@@ -88,6 +99,7 @@ test('perfil sem ficha médica e sem listas vem só com o essencial', async () =
   const paciente = await getPacienteByUuid('uuid-1', 'policial', undefined, 'jwt');
 
   expect(paciente.fichaMedica).toBeUndefined();
+  expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
   expect(paciente.alergias).toBeUndefined();
   expect(paciente.identificacao).toEqual({});
 });

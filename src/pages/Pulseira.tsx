@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { HeartPulse, IdCard } from 'lucide-react';
 import {
-  Accessibility,
-  Brain,
-  HeartPulse,
-  IdCard,
-  Stethoscope,
-  TriangleAlert,
-} from 'lucide-react';
+  IconeAlergia,
+  IconeCerebro,
+  IconeDeficiencia,
+  IconeFichaMedica,
+  IconePeso,
+  IconeRegua,
+} from '../components/icones';
+import { alturaMetros, pesoKg } from '../utils/formato';
 import { getPacienteByUuid } from '../api/paciente';
 import { useAuth } from '../contexts/AuthContext';
 import { CardSecao } from '../components/CardSecao';
@@ -115,6 +117,7 @@ export default function Pulseira() {
         nome={paciente.nome}
         idade={paciente.idade}
         telefoneResponsavel={id.telefoneResponsavel}
+        fotoUrl={paciente.fotoUrl}
       />
       <CardSecao titulo="Identificação" Icone={IdCard}>
         <dl className="flex flex-col gap-2 text-sm">
@@ -136,12 +139,14 @@ export default function Pulseira() {
           </div>
           <div className="grid grid-cols-3 gap-2 text-center text-sm">
             <div className="rounded-lg bg-slate-50 p-2">
+              <IconeRegua className="mx-auto size-4 text-slate-400" />
               <span className="block text-xs text-slate-500">Altura</span>
-              <span className="font-semibold">{ficha.alturaCm} cm</span>
+              <span className="font-semibold">{alturaMetros(ficha.alturaCm)}</span>
             </div>
             <div className="rounded-lg bg-slate-50 p-2">
+              <IconePeso className="mx-auto size-4 text-slate-400" />
               <span className="block text-xs text-slate-500">Peso</span>
-              <span className="font-semibold">{ficha.pesoKg} kg</span>
+              <span className="font-semibold">{pesoKg(ficha.pesoKg)}</span>
             </div>
             <div className="rounded-lg bg-slate-50 p-2">
               <span className="block text-xs text-slate-500">Etnia</span>
@@ -162,7 +167,7 @@ export default function Pulseira() {
       )}
 
       {paciente.alergias && paciente.alergias.length > 0 && (
-        <CardSecao titulo="Alergias" Icone={TriangleAlert}>
+        <CardSecao titulo="Alergias" Icone={IconeAlergia}>
           <ul className="flex flex-col gap-2 text-sm">
             {paciente.alergias.map((a) => (
               <li key={a.nome} className="flex items-center justify-between">
@@ -175,7 +180,7 @@ export default function Pulseira() {
       )}
 
       {paciente.doencas && paciente.doencas.length > 0 && (
-        <CardSecao titulo="Doenças" Icone={Stethoscope}>
+        <CardSecao titulo="Doenças" Icone={IconeFichaMedica}>
           <ul className="flex flex-col gap-1 text-sm">
             {paciente.doencas.map((d) => (
               <li key={d.nome}>{d.nome}</li>
@@ -185,7 +190,7 @@ export default function Pulseira() {
       )}
 
       {paciente.transtornos && paciente.transtornos.length > 0 && (
-        <CardSecao titulo="Transtornos" Icone={Brain}>
+        <CardSecao titulo="Transtornos" Icone={IconeCerebro}>
           <ul className="flex flex-col gap-2 text-sm">
             {paciente.transtornos.map((t) => (
               <li key={t.nome}>
@@ -198,7 +203,7 @@ export default function Pulseira() {
       )}
 
       {paciente.deficiencias && paciente.deficiencias.length > 0 && (
-        <CardSecao titulo="Deficiências" Icone={Accessibility}>
+        <CardSecao titulo="Deficiências" Icone={IconeDeficiencia}>
           <ul className="flex flex-col gap-1 text-sm">
             {paciente.deficiencias.map((d) => (
               <li key={d.nome}>{d.nome}</li>

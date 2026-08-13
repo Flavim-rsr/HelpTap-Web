@@ -1,5 +1,6 @@
 import type { Criticidade, PacienteView, Role } from '../types';
 import { apiUrl, request } from './client';
+import { idadeDe } from '../utils/formato';
 import { mockGetPaciente } from './mock/handlers';
 
 /** Resposta de POST /api/nfc/read/{uuid}/professional (já filtrada por papel no back). */
@@ -37,12 +38,30 @@ const CRITICIDADE: Record<string, Criticidade> = {
   CRITICAL: 'Critica',
 };
 
-function paraPacienteView(perfil: LeituraResponse['professionalProfile']): PacienteView {
+type DadosBasicos = { dateBirth: string | null; userPicture: string | null };
+
+/**
+ * Foto e data de nascimento ainda não vêm no perfil profissional; busca no
+ * endpoint de usuário. Falha aqui não derruba a tela (dados extras).
+ */
+async function dadosBasicosDe(userId: number, token: string): Promise<DadosBasicos | null> {
+  try {
+    return await request<DadosBasicos>(`/api/users/${userId}`, { method: 'GET', token });
+  } catch {
+    return null;
+  }
+}
+
+function paraPacienteView(
+  perfil: LeituraResponse['professionalProfile'],
+  basicos: DadosBasicos | null,
+): PacienteView {
   const contato = perfil.emergencyContacts?.[0];
   return {
     nome: perfil.fullName,
-    // O perfil profissional do back ainda não expõe data de nascimento,
-    // CPF, endereço nem filiação — a idade e esses campos ficam ausentes.
+    ...(basicos?.dateBirth ? { idade: idadeDe(basicos.dateBirth) } : {}),
+    ...(basicos?.userPicture ? { fotoUrl: basicos.userPicture } : {}),
+    // CPF, endereço e filiação seguem fora do contrato profissional.
     identificacao: {
       ...(contato ? { telefoneResponsavel: contato.phone } : {}),
     },
@@ -109,5 +128,6 @@ export async function getPacienteByUuid(
     throw new Error('ACESSO_NEGADO');
   }
 
-  return paraPacienteView(resposta.professionalProfile);
+  const basicos = await dadosBasicosDe(resposta.professionalProfile.userId, token);
+  return paraPacienteView(resposta.professionalProfile, basicos);
 }
