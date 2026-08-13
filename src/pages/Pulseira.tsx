@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { HeartPulse, IdCard } from 'lucide-react';
+import { HeartPulse, IdCard, UserRound } from 'lucide-react';
 import {
   IconeAlergia,
   IconeCerebro,
@@ -149,6 +149,7 @@ export default function Pulseira() {
               <span className="font-semibold">{pesoKg(ficha.pesoKg)}</span>
             </div>
             <div className="rounded-lg bg-slate-50 p-2">
+              <UserRound aria-hidden className="mx-auto size-4 text-slate-400" />
               <span className="block text-xs text-slate-500">Etnia</span>
               <span className="font-semibold">{ficha.etnia}</span>
             </div>
