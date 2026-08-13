@@ -13,11 +13,11 @@ export function InputComIcone({ label, Icone, ...props }: Props) {
       <label htmlFor={id} className="text-sm font-medium text-slate-600">
         {label}
       </label>
-      <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-brand">
-        <Icone aria-hidden className="size-4 shrink-0 text-slate-400" />
+      <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-brand">
+        <Icone aria-hidden className="size-5 shrink-0 text-slate-400" />
         <input
           id={id}
-          className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+          className="w-full bg-transparent text-base outline-none placeholder:text-slate-400"
           {...props}
         />
       </div>

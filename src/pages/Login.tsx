@@ -41,16 +41,18 @@ export default function Login() {
 
   return (
     <main className="grid min-h-screen place-items-center p-4">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-md">
         <Link to="/" className="text-sm text-slate-500 hover:text-slate-700">
           ← Início
         </Link>
         <div className="mt-6 text-center">
-          <span className="mx-auto grid size-12 place-items-center rounded-xl bg-white shadow-sm">
-            <Icone aria-hidden className={`size-6 ${cfg.corTexto}`} />
+          <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-white shadow-sm">
+            <Icone aria-hidden className={`size-8 ${cfg.corTexto}`} />
           </span>
-          <h1 className="mt-3 text-xl font-bold">{cfg.acessoTitulo}</h1>
-          <p className="mt-1 text-sm text-slate-500">Entre com suas credenciais</p>
+          <h1 className="mt-4 text-2xl font-bold">{cfg.acessoTitulo}</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {perfil === 'usuario' ? 'Entre com suas credenciais' : 'Entre com suas credenciais profissionais'}
+          </p>
         </div>
         <form onSubmit={aoEnviar} className="mt-6 flex flex-col gap-4">
           <InputComIcone

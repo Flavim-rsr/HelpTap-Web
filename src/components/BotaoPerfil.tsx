@@ -10,7 +10,7 @@ export function BotaoPerfil({ perfil, children, ...props }: Props) {
   const cfg = PERFIL_CONFIG[perfil];
   return (
     <button
-      className={`w-full rounded-lg bg-gradient-to-r ${cfg.gradiente} px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50`}
+      className={`w-full rounded-xl bg-gradient-to-r ${cfg.gradiente} px-4 py-3.5 text-base font-semibold text-white shadow-md transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50`}
       {...props}
     >
       {children}

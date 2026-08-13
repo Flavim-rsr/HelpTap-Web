@@ -3,6 +3,8 @@ import type { Role } from '../types';
 
 export interface PerfilInfo {
   titulo: string;
+  /** Versão curta para botões (ex.: "Cadastrar Bombeiro"). */
+  tituloCurto?: string;
   acessoTitulo: string;
   descricao: string;
   gradiente: string; // classes tailwind from-.. to-..
@@ -29,29 +31,30 @@ export const PERFIL_CONFIG: Record<Role, PerfilInfo> = {
     corSolida: 'bg-blue-600',
     corTexto: 'text-blue-600',
     registroLabel: 'CRM',
-    registroPlaceholder: 'CRM/UF 00000',
+    registroPlaceholder: 'CRM123456-SP',
     Icone: Stethoscope,
   },
   policial: {
     titulo: 'Policial',
     acessoTitulo: 'Acesso Policial',
     descricao: 'Informações de identificação',
-    gradiente: 'from-slate-700 to-slate-900',
-    corSolida: 'bg-slate-700',
-    corTexto: 'text-slate-700',
+    gradiente: 'from-indigo-700 to-indigo-900',
+    corSolida: 'bg-indigo-800',
+    corTexto: 'text-indigo-800',
     registroLabel: 'Registro funcional',
-    registroPlaceholder: '00000000',
+    registroPlaceholder: 'POL12345-SSP-SP',
     Icone: Shield,
   },
   bombeiro: {
     titulo: 'Bombeiro / Socorrista',
+    tituloCurto: 'Bombeiro',
     acessoTitulo: 'Acesso Bombeiro / Socorrista',
     descricao: 'Informações de emergência',
     gradiente: 'from-orange-500 to-red-500',
     corSolida: 'bg-orange-600',
     corTexto: 'text-orange-600',
     registroLabel: 'Registro funcional',
-    registroPlaceholder: '00000000',
+    registroPlaceholder: 'CBM98765-SP',
     Icone: Flame,
   },
   usuario: {
