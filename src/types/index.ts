@@ -96,6 +96,7 @@ export interface Credenciais {
 
 export interface CadastroProfissional {
   nome: string;
+  cpf: string;
   email: string;
   telefone: string;
   senha: string;

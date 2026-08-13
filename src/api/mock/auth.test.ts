@@ -24,10 +24,13 @@ test('login como titular devolve sessão com pacienteId', async () => {
   expect(s.pacienteId).toBe('p1');
 });
 
-test('validarRegistro aceita CRM no formato CRM/UF 00000 e registros funcionais numéricos', () => {
-  expect(validarRegistro('medico', 'CRM/SP 12345')).toBe(true);
+test('validarRegistro espelha os formatos do back-end real', () => {
+  expect(validarRegistro('medico', 'CRM123456-SP')).toBe(true);
+  expect(validarRegistro('medico', '123456-SP')).toBe(true);
   expect(validarRegistro('medico', '12345')).toBe(false);
-  expect(validarRegistro('policial', '12345678')).toBe(true);
+  expect(validarRegistro('policial', 'POL12345-SSP-SP')).toBe(true);
+  expect(validarRegistro('policial', '12345678')).toBe(false);
+  expect(validarRegistro('bombeiro', 'CBM98765-SP')).toBe(true);
   expect(validarRegistro('bombeiro', 'abc')).toBe(false);
 });
 
@@ -37,7 +40,8 @@ test('cadastro com registro inválido rejeita; com registro válido cria conta e
     email: 'novo@helptap.com',
     telefone: '(16) 90000-0000',
     senha: 'senha123',
-    registro: 'CRM/SP 54321',
+    registro: 'CRM54321-SP',
+    cpf: '52998224725',
   };
   await expect(mockCadastro('medico', { ...dados, registro: 'xx' })).rejects.toThrow(
     'Registro profissional inválido',
@@ -55,7 +59,8 @@ test('cadastro rejeita com e-mail já cadastrado', async () => {
       email: 'medico@helptap.com',
       telefone: '(16) 90000-0000',
       senha: 'outrasenha',
-      registro: 'CRM/SP 99999',
+      registro: 'CRM99999-SP',
+      cpf: '52998224726',
     }),
   ).rejects.toThrow('E-mail já cadastrado');
 });

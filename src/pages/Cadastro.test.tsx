@@ -25,6 +25,7 @@ test('cadastro de médico exibe campo CRM e rejeita registro inválido', async (
   renderEm('/cadastro/medico');
   expect(screen.getByRole('heading', { name: 'Cadastro de Médico' })).toBeInTheDocument();
   await userEvent.type(screen.getByLabelText('Nome Completo'), 'Dr. Teste');
+  await userEvent.type(screen.getByLabelText('CPF'), '529.982.247-25');
   await userEvent.type(screen.getByLabelText('Telefone'), '(16) 91111-1111');
   await userEvent.type(screen.getByLabelText('CRM'), 'abc');
   await userEvent.type(screen.getByLabelText('E-mail'), 'teste@helptap.com');
@@ -36,8 +37,9 @@ test('cadastro de médico exibe campo CRM e rejeita registro inválido', async (
 test('cadastro válido cria a conta e navega para /leitura', async () => {
   renderEm('/cadastro/bombeiro');
   await userEvent.type(screen.getByLabelText('Nome Completo'), 'Cb. Nova');
+  await userEvent.type(screen.getByLabelText('CPF'), '529.982.247-25');
   await userEvent.type(screen.getByLabelText('Telefone'), '(16) 92222-2222');
-  await userEvent.type(screen.getByLabelText('Registro funcional'), '1234567');
+  await userEvent.type(screen.getByLabelText('Registro funcional'), 'CBM12345-SP');
   await userEvent.type(screen.getByLabelText('E-mail'), 'nova@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), 'senha123');
   await userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));

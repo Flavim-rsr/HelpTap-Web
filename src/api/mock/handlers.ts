@@ -81,8 +81,10 @@ export async function mockLogin(role: Role, credenciais: Credenciais): Promise<S
  * (CRM para médicos, registros funcionais para policiais e bombeiros).
  */
 export function validarRegistro(role: Role, registro: string): boolean {
-  if (role === 'medico') return /^CRM\/[A-Z]{2}\s?\d{4,6}$/i.test(registro.trim());
-  return /^\d{5,8}$/.test(registro.trim());
+  const r = registro.trim();
+  if (role === 'medico') return /^(CRM)?\d{4,7}-[A-Z]{2}$/i.test(r);
+  if (role === 'policial') return /^POL\d{4,8}-[A-Z]{2,4}-[A-Z]{2}$/i.test(r);
+  return /^CBM\d{4,8}-[A-Z]{2}$/i.test(r);
 }
 
 export async function mockCadastro(role: Role, dados: CadastroProfissional): Promise<Sessao> {
