@@ -49,6 +49,15 @@ function extrairMensagem(data: unknown): string {
   return 'Não foi possível concluir a solicitação. Tente novamente.';
 }
 
+/** Erro de API com o status HTTP preservado para decisões de tela. */
+export class ErroApi extends Error {
+  status: number;
+  constructor(mensagem: string, status: number) {
+    super(mensagem);
+    this.status = status;
+  }
+}
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -82,9 +91,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     // Auth do Spring sem corpo JSON (token ausente/expirado) → sessão expirada
     if ((response.status === 401 || response.status === 403) && data === null) {
-      throw new Error('Sessão expirada. Faça login novamente.');
+      throw new ErroApi('Sessão expirada. Faça login novamente.', response.status);
     }
-    throw new Error(extrairMensagem(data));
+    throw new ErroApi(extrairMensagem(data), response.status);
   }
 
   return data as T;

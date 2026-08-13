@@ -121,12 +121,17 @@ export default function Leitura() {
           </ul>
         </div>
         )}
+        {apiUrl() && (
+          <Link to="/conta" className="mt-6 block text-sm text-brand underline">
+            Minha conta
+          </Link>
+        )}
         <button
           onClick={() => {
             sair();
             navigate('/');
           }}
-          className="mt-6 text-sm text-slate-500 underline hover:text-slate-700"
+          className="mt-3 text-sm text-slate-500 underline hover:text-slate-700"
         >
           Sair
         </button>

@@ -40,7 +40,7 @@ describe('login real', () => {
     );
     const corpo = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(corpo).toEqual({ email: 'medico@x.com', password: '123456' });
-    expect(sessao).toEqual({ token: 'jwt-token', role: 'medico', nome: 'Dra. Ana' });
+    expect(sessao).toEqual({ token: 'jwt-token', userId: 7, role: 'medico', nome: 'Dra. Ana' });
   });
 
   test('titular recebe pacienteId com o próprio userId', async () => {

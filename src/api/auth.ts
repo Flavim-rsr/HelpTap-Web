@@ -15,6 +15,7 @@ const soDigitos = (valor: string) => valor.replace(/\D/g, '');
 function sessaoDe(perfil: Role, resposta: LoginResponse): Sessao {
   return {
     token: resposta.token,
+    userId: resposta.userId,
     role: perfil,
     nome: resposta.fullName,
     ...(perfil === 'usuario' ? { pacienteId: String(resposta.userId) } : {}),

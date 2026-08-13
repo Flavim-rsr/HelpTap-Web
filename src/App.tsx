@@ -6,6 +6,7 @@ import Leitura from './pages/Leitura';
 import Pulseira from './pages/Pulseira';
 import NotFound from './pages/NotFound';
 import { RequireAuth } from './components/RequireAuth';
+import Conta from './pages/Conta';
 
 export default function App() {
   return (
@@ -27,6 +28,14 @@ export default function App() {
           element={
             <RequireAuth>
               <Pulseira />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/conta"
+          element={
+            <RequireAuth>
+              <Conta />
             </RequireAuth>
           }
         />

@@ -84,6 +84,8 @@ export interface AccessLog {
 
 export interface Sessao {
   token: string;
+  /** id do usuário no backend; ausente nas sessões de demonstração (mock). */
+  userId?: number;
   role: Role;
   nome: string;
   /** id do PacienteCompleto vinculado a este usuário, quando role === 'usuario' */
