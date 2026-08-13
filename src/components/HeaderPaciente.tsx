@@ -3,7 +3,7 @@ import { Calendar, MapPin, Phone, UserRound } from 'lucide-react';
 
 interface Props {
   nome: string;
-  idade: number;
+  idade?: number;
   telefoneResponsavel?: string;
 }
 
@@ -16,10 +16,12 @@ export function HeaderPaciente({ nome, idade, telefoneResponsavel }: Props) {
       </span>
       <div>
         <h1 className="text-xl font-bold">{nome}</h1>
-        <p className="mt-0.5 flex items-center justify-center gap-1 text-sm text-slate-500">
-          <Calendar aria-hidden className="size-4" />
-          {idade} anos
-        </p>
+        {idade !== undefined && (
+          <p className="mt-0.5 flex items-center justify-center gap-1 text-sm text-slate-500">
+            <Calendar aria-hidden className="size-4" />
+            {idade} anos
+          </p>
+        )}
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         {telefoneResponsavel && (

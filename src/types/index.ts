@@ -1,6 +1,6 @@
 export type Role = 'medico' | 'policial' | 'bombeiro' | 'usuario';
 
-export type Criticidade = 'Baixa' | 'Media' | 'Alta';
+export type Criticidade = 'Baixa' | 'Media' | 'Alta' | 'Critica';
 
 export interface Alergia {
   nome: string;
@@ -42,7 +42,8 @@ export interface Identificacao {
 /** O que a API devolve para /pulseira/:uuid — já filtrado por perfil */
 export interface PacienteView {
   nome: string;
-  idade: number;
+  /** Ausente quando o backend não expõe a data de nascimento no perfil. */
+  idade?: number;
   identificacao: Identificacao;
   fichaMedica?: FichaMedica;
   alergias?: Alergia[];

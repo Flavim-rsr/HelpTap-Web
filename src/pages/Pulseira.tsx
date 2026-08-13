@@ -29,20 +29,25 @@ export default function Pulseira() {
   const { sessao } = useAuth();
   const [estado, setEstado] = useState<'carregando' | 'erro' | 'ok'>('carregando');
   const [paciente, setPaciente] = useState<PacienteView | null>(null);
+  const [mensagemErro, setMensagemErro] = useState('');
 
   useEffect(() => {
     if (!sessao) return;
     let ativo = true;
     setEstado('carregando');
-    getPacienteByUuid(uuid, sessao.role, sessao.pacienteId)
+    getPacienteByUuid(uuid, sessao.role, sessao.pacienteId, sessao.token)
       .then((p) => {
         if (ativo) {
           setPaciente(p);
           setEstado('ok');
         }
       })
-      .catch(() => {
-        if (ativo) setEstado('erro');
+      .catch((erro: unknown) => {
+        if (ativo) {
+          const texto = erro instanceof Error ? erro.message : '';
+          setMensagemErro(texto === 'ACESSO_NEGADO' ? '' : texto);
+          setEstado('erro');
+        }
       });
     return () => {
       ativo = false;
@@ -63,7 +68,7 @@ export default function Pulseira() {
         <div>
           <h1 className="text-xl font-bold">Pulseira não vinculada</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Nenhum paciente está associado a este código.
+            {mensagemErro || 'Nenhum paciente está associado a este código.'}
           </p>
           <Link to="/leitura" className="mt-4 inline-block text-brand underline">
             Voltar à leitura
