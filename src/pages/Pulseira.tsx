@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   Accessibility,
   Brain,
@@ -26,7 +26,8 @@ function LinhaDado({ rotulo, valor }: { rotulo: string; valor: string }) {
 
 export default function Pulseira() {
   const { uuid = '' } = useParams();
-  const { sessao } = useAuth();
+  const navigate = useNavigate();
+  const { sessao, sair } = useAuth();
   const [estado, setEstado] = useState<'carregando' | 'erro' | 'ok'>('carregando');
   const [paciente, setPaciente] = useState<PacienteView | null>(null);
   const [mensagemErro, setMensagemErro] = useState('');
@@ -82,9 +83,22 @@ export default function Pulseira() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4 pb-10">
-      <Link to="/leitura" className="text-sm text-slate-500 hover:text-slate-700">
-        ← Nova leitura
-      </Link>
+      {sessao?.role === 'usuario' ? (
+        // Para o titular não existe "nova leitura": a volta é sair da conta.
+        <button
+          onClick={() => {
+            sair();
+            navigate('/');
+          }}
+          className="self-start text-sm text-slate-500 underline hover:text-slate-700"
+        >
+          ← Sair da minha conta
+        </button>
+      ) : (
+        <Link to="/leitura" className="text-sm text-slate-500 hover:text-slate-700">
+          ← Nova leitura
+        </Link>
+      )}
       <HeaderPaciente
         nome={paciente.nome}
         idade={paciente.idade}
