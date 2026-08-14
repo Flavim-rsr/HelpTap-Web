@@ -79,7 +79,7 @@ export default function Pulseira() {
                 sair();
                 navigate('/');
               }}
-              className="mt-4 inline-block text-brand underline"
+              className="mt-4 inline-block text-brand"
             >
               Sair
             </button>
@@ -104,7 +104,7 @@ export default function Pulseira() {
             sair();
             navigate('/');
           }}
-          className="self-start text-sm text-slate-500 underline hover:text-slate-700"
+          className="self-start text-sm text-slate-500 hover:text-slate-700"
         >
           ← Sair
         </button>
