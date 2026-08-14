@@ -31,6 +31,11 @@ export interface FichaMedica {
   observacoes?: string;
 }
 
+export interface ContatoEmergencia {
+  nome: string;
+  telefone: string;
+}
+
 export interface Identificacao {
   cpf?: string;
   endereco?: string;
@@ -47,6 +52,8 @@ export interface PacienteView {
   /** Foto de perfil (data URI), quando o titular cadastrou uma. */
   fotoUrl?: string;
   identificacao: Identificacao;
+  /** Ordem segue os slots do app: índice 0 = principal, 1 = alternativo. */
+  contatos?: ContatoEmergencia[];
   fichaMedica?: FichaMedica;
   alergias?: Alergia[];
   doencas?: Doenca[];

@@ -56,15 +56,18 @@ function paraPacienteView(
   perfil: LeituraResponse['professionalProfile'],
   basicos: DadosBasicos | null,
 ): PacienteView {
-  const contato = perfil.emergencyContacts?.[0];
+  const contatos = perfil.emergencyContacts ?? [];
   return {
     nome: perfil.fullName,
     ...(basicos?.dateBirth ? { idade: idadeDe(basicos.dateBirth) } : {}),
     ...(basicos?.userPicture ? { fotoUrl: basicos.userPicture } : {}),
     // CPF, endereço e filiação seguem fora do contrato profissional.
     identificacao: {
-      ...(contato ? { telefoneResponsavel: contato.phone } : {}),
+      ...(contatos[0] ? { telefoneResponsavel: contatos[0].phone } : {}),
     },
+    ...(contatos.length
+      ? { contatos: contatos.map((c) => ({ nome: c.phoneOwner, telefone: c.phone })) }
+      : {}),
     ...(perfil.medicalRecord
       ? {
           fichaMedica: {

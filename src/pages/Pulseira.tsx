@@ -116,7 +116,7 @@ export default function Pulseira() {
       <HeaderPaciente
         nome={paciente.nome}
         idade={paciente.idade}
-        telefoneResponsavel={id.telefoneResponsavel}
+        contatos={paciente.contatos}
         fotoUrl={paciente.fotoUrl}
       />
       <CardSecao titulo="Identificação" Icone={IdCard}>

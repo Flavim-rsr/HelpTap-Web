@@ -1,25 +1,30 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Phone, UserRound } from 'lucide-react';
 import { telefoneInternacional } from '../utils/formato';
+import type { ContatoEmergencia } from '../types';
 
 interface Props {
   nome: string;
   idade?: number;
-  telefoneResponsavel?: string;
+  contatos?: ContatoEmergencia[];
   fotoUrl?: string;
 }
 
-export function HeaderPaciente({ nome, idade, telefoneResponsavel, fotoUrl }: Props) {
-  const [estadoEnvio, setEstadoEnvio] = useState<'parado' | 'localizando' | 'erro'>('parado');
+export function HeaderPaciente({ nome, idade, contatos = [], fotoUrl }: Props) {
+  // Índice do contato cuja localização está sendo obtida (null = nenhum).
+  const [enviandoPara, setEnviandoPara] = useState<number | null>(null);
+  const [erroLocalizacao, setErroLocalizacao] = useState(false);
 
-  // Abre o WhatsApp do contato de emergência com a posição atual do leitor
+  // Abre o WhatsApp do contato escolhido com a posição atual do leitor
   // já digitada (link wa.me). O envio final é confirmado pela pessoa.
-  function enviarLocalizacao() {
-    if (!telefoneResponsavel || !('geolocation' in navigator)) {
-      setEstadoEnvio('erro');
+  function enviarLocalizacao(indice: number) {
+    const contato = contatos[indice];
+    if (!contato || !('geolocation' in navigator)) {
+      setErroLocalizacao(true);
       return;
     }
-    setEstadoEnvio('localizando');
+    setErroLocalizacao(false);
+    setEnviandoPara(indice);
     navigator.geolocation.getCurrentPosition(
       (posicao) => {
         const { latitude, longitude } = posicao.coords;
@@ -27,11 +32,14 @@ export function HeaderPaciente({ nome, idade, telefoneResponsavel, fotoUrl }: Pr
         const texto =
           `Emergência: estou prestando socorro a ${nome} pelo HelpTap. `
           + `Localização atual: ${mapa}`;
-        const numero = telefoneInternacional(telefoneResponsavel);
+        const numero = telefoneInternacional(contato.telefone);
         window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
-        setEstadoEnvio('parado');
+        setEnviandoPara(null);
       },
-      () => setEstadoEnvio('erro'),
+      () => {
+        setErroLocalizacao(true);
+        setEnviandoPara(null);
+      },
       { enableHighAccuracy: true, timeout: 10000 },
     );
   }
@@ -58,29 +66,44 @@ export function HeaderPaciente({ nome, idade, telefoneResponsavel, fotoUrl }: Pr
           </p>
         )}
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        {telefoneResponsavel && (
-          <a
-            href={`tel:+${telefoneInternacional(telefoneResponsavel)}`}
-            className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700"
-          >
-            <Phone aria-hidden className="size-4" />
-            Ligar Responsável
-          </a>
-        )}
-        {telefoneResponsavel && (
-          <button
-            onClick={enviarLocalizacao}
-            aria-live="polite"
-            className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-60"
-            disabled={estadoEnvio === 'localizando'}
-          >
-            <MapPin aria-hidden className="size-4" />
-            {estadoEnvio === 'localizando' ? 'Obtendo localização…' : 'Enviar Localização'}
-          </button>
-        )}
-      </div>
-      {estadoEnvio === 'erro' && (
+      {contatos.length > 0 && (
+        <div className="flex w-full flex-col gap-2">
+          {contatos.map((contato, indice) => (
+            <div
+              key={`${contato.telefone}-${indice}`}
+              className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
+            >
+              <div className="min-w-0 text-left">
+                <p className="truncate text-sm font-semibold">{contato.nome}</p>
+                {contatos.length > 1 && (
+                  <p className="text-xs text-slate-500">
+                    {indice === 0 ? 'Contato principal' : 'Contato alternativo'}
+                  </p>
+                )}
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <a
+                  href={`tel:+${telefoneInternacional(contato.telefone)}`}
+                  className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700"
+                >
+                  <Phone aria-hidden className="size-4" />
+                  Ligar
+                </a>
+                <button
+                  onClick={() => enviarLocalizacao(indice)}
+                  aria-live="polite"
+                  className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-60"
+                  disabled={enviandoPara !== null}
+                >
+                  <MapPin aria-hidden className="size-4" />
+                  {enviandoPara === indice ? 'Localizando…' : 'Localização'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {erroLocalizacao && (
         <p className="text-xs text-red-600">
           Não foi possível obter sua localização. Verifique a permissão do navegador.
         </p>

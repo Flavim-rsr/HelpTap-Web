@@ -20,7 +20,10 @@ const RESPOSTA = {
     disorders: [{ disorderName: 'TDAH', disorderDegree: 'Moderado', description: 'Acompanhamento' }],
     allergies: [{ allergenic: 'Dipirona', riskRating: 'CRITICAL' }],
     deficiencies: [{ type: 'Auditiva' }],
-    emergencyContacts: [{ phone: '(16) 99223-5555', phoneOwner: 'Maria' }],
+    emergencyContacts: [
+      { phone: '(16) 99223-5555', phoneOwner: 'Maria' },
+      { phone: '(16) 98877-1234', phoneOwner: 'João' },
+    ],
   },
 };
 
@@ -66,6 +69,10 @@ test('mapeia a leitura profissional real para a visão do paciente', async () =>
   expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
   expect(fetchMock.mock.calls[1][0]).toBe('https://api.teste/api/users/7');
   expect(paciente.identificacao.telefoneResponsavel).toBe('(16) 99223-5555');
+  expect(paciente.contatos).toEqual([
+    { nome: 'Maria', telefone: '(16) 99223-5555' },
+    { nome: 'João', telefone: '(16) 98877-1234' },
+  ]);
   expect(paciente.fichaMedica).toEqual({
     tipoSanguineo: 'O+',
     alturaCm: 170,
@@ -101,6 +108,7 @@ test('perfil sem ficha médica e sem listas vem só com o essencial', async () =
   expect(paciente.fichaMedica).toBeUndefined();
   expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
   expect(paciente.alergias).toBeUndefined();
+  expect(paciente.contatos).toBeUndefined();
   expect(paciente.identificacao).toEqual({});
 });
 

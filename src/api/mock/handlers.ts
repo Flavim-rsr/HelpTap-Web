@@ -14,7 +14,11 @@ import { pacientesMock, usuariosMock, wearablesMock } from './data';
  * back-end real. Componentes NUNCA filtram — só renderizam o que chega.
  */
 export function filtrarPacientePorRole(p: PacienteCompleto, role: Role): PacienteView {
-  const base = { nome: p.nome, idade: p.idade };
+  const base = {
+    nome: p.nome,
+    idade: p.idade,
+    contatos: [{ nome: 'Responsável', telefone: p.telefoneResponsavel }],
+  };
   switch (role) {
     case 'medico':
     case 'usuario':
