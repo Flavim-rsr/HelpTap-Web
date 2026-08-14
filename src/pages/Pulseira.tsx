@@ -81,7 +81,7 @@ export default function Pulseira() {
               }}
               className="mt-4 inline-block text-brand underline"
             >
-              Sair da minha conta
+              Sair
             </button>
           ) : (
             <Link to="/leitura" className="mt-4 inline-block text-brand underline">
@@ -106,7 +106,7 @@ export default function Pulseira() {
           }}
           className="self-start text-sm text-slate-500 underline hover:text-slate-700"
         >
-          ← Sair da minha conta
+          ← Sair
         </button>
       ) : (
         <Link to="/leitura" className="text-sm text-slate-500 hover:text-slate-700">
