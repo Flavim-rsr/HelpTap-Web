@@ -6,9 +6,9 @@ import App from '../App';
 
 beforeEach(() => sessionStorage.clear());
 
-function renderEm(rota: string) {
+function renderAt(route: string) {
   render(
-    <MemoryRouter initialEntries={[rota]}>
+    <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
         <App />
       </AuthProvider>
@@ -17,12 +17,12 @@ function renderEm(rota: string) {
 }
 
 test('perfil inválido na URL mostra 404', () => {
-  renderEm('/login/astronauta');
+  renderAt('/login/astronauta');
   expect(screen.getByText(/página não encontrada/i)).toBeInTheDocument();
 });
 
 test('credenciais erradas mostram erro acessível', async () => {
-  renderEm('/login/medico');
+  renderAt('/login/medico');
   await userEvent.type(screen.getByLabelText('E-mail'), 'medico@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), 'errada');
   await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
@@ -31,7 +31,7 @@ test('credenciais erradas mostram erro acessível', async () => {
 
 test('login bem-sucedido navega para o destino guardado', async () => {
   sessionStorage.setItem('helptap.destino', '/pulseira/550e8400-e29b-41d4-a716-446655440001');
-  renderEm('/login/medico');
+  renderAt('/login/medico');
   await userEvent.type(screen.getByLabelText('E-mail'), 'medico@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), '123456');
   await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
@@ -40,6 +40,6 @@ test('login bem-sucedido navega para o destino guardado', async () => {
 });
 
 test('usuário não tem link de cadastro', () => {
-  renderEm('/login/usuario');
+  renderAt('/login/usuario');
   expect(screen.queryByText(/cadastre-se/i)).not.toBeInTheDocument();
 });

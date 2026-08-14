@@ -6,9 +6,9 @@ import App from '../App';
 
 beforeEach(() => sessionStorage.clear());
 
-function renderEm(rota: string) {
+function renderAt(route: string) {
   render(
-    <MemoryRouter initialEntries={[rota]}>
+    <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
         <App />
       </AuthProvider>
@@ -17,12 +17,12 @@ function renderEm(rota: string) {
 }
 
 test('usuário comum não tem cadastro na web', () => {
-  renderEm('/cadastro/usuario');
+  renderAt('/cadastro/usuario');
   expect(screen.getByText(/página não encontrada/i)).toBeInTheDocument();
 });
 
 test('cadastro de médico exibe campo CRM e rejeita registro inválido', async () => {
-  renderEm('/cadastro/medico');
+  renderAt('/cadastro/medico');
   expect(screen.getByRole('heading', { name: 'Cadastro de Médico' })).toBeInTheDocument();
   await userEvent.type(screen.getByLabelText('Nome Completo'), 'Dr. Teste');
   await userEvent.type(screen.getByLabelText('CPF'), '529.982.247-25');
@@ -35,7 +35,7 @@ test('cadastro de médico exibe campo CRM e rejeita registro inválido', async (
 });
 
 test('cadastro válido cria a conta e navega para /leitura', async () => {
-  renderEm('/cadastro/bombeiro');
+  renderAt('/cadastro/bombeiro');
   await userEvent.type(screen.getByLabelText('Nome Completo'), 'Cb. Nova');
   await userEvent.type(screen.getByLabelText('CPF'), '529.982.247-25');
   await userEvent.type(screen.getByLabelText('Telefone'), '(16) 92222-2222');

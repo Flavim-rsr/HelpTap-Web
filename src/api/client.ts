@@ -1,6 +1,6 @@
 /**
  * Ponto único de troca mock → back-end real.
- * Com VITE_API_URL definida (`.env`), auth.ts e paciente.ts falam com a API
+ * Com VITE_API_URL definida (`.env`), auth.ts e patient.ts falam com a API
  * Spring no Railway; sem ela (testes, demonstração offline), caem nos mocks.
  * As assinaturas das funções NÃO mudam — nenhuma página é alterada.
  */
@@ -20,7 +20,7 @@ type RequestOptions = {
 };
 
 /** O back responde erros como ErrorResponseDTO, com mensagens em inglês. */
-const TRADUCOES: Array<[RegExp, string]> = [
+const TRANSLATIONS: Array<[RegExp, string]> = [
   [/invalid email or password/i, 'E-mail ou senha inválidos.'],
   [/cannot be accessed by a web/i, 'Esta conta não tem acesso pelo site.'],
   [/email already/i, 'Este e-mail já está cadastrado.'],
@@ -33,27 +33,27 @@ const TRADUCOES: Array<[RegExp, string]> = [
   [/invalid firefighter/i, 'Formato do registro inválido. Use: CBM98765-SP'],
 ];
 
-function traduzir(message: string): string {
-  for (const [pattern, texto] of TRADUCOES) {
-    if (pattern.test(message)) return texto;
+function translate(message: string): string {
+  for (const [pattern, text] of TRANSLATIONS) {
+    if (pattern.test(message)) return text;
   }
   return message;
 }
 
-function extrairMensagem(data: unknown): string {
-  const corpo = data as { message?: string; details?: unknown } | null;
-  if (Array.isArray(corpo?.details) && typeof corpo.details[0] === 'string') {
-    return traduzir(corpo.details[0]);
+function extractMessage(data: unknown): string {
+  const body = data as { message?: string; details?: unknown } | null;
+  if (Array.isArray(body?.details) && typeof body.details[0] === 'string') {
+    return translate(body.details[0]);
   }
-  if (corpo?.message) return traduzir(corpo.message);
+  if (body?.message) return translate(body.message);
   return 'Não foi possível concluir a solicitação. Tente novamente.';
 }
 
 /** Erro de API com o status HTTP preservado para decisões de tela. */
-export class ErroApi extends Error {
+export class ApiError extends Error {
   status: number;
-  constructor(mensagem: string, status: number) {
-    super(mensagem);
+  constructor(message: string, status: number) {
+    super(message);
     this.status = status;
   }
 }
@@ -91,9 +91,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     // Auth do Spring sem corpo JSON (token ausente/expirado) → sessão expirada
     if ((response.status === 401 || response.status === 403) && data === null) {
-      throw new ErroApi('Sessão expirada. Faça login novamente.', response.status);
+      throw new ApiError('Sessão expirada. Faça login novamente.', response.status);
     }
-    throw new ErroApi(extrairMensagem(data), response.status);
+    throw new ApiError(extractMessage(data), response.status);
   }
 
   return data as T;

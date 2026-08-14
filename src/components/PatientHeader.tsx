@@ -1,44 +1,44 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Phone, UserRound } from 'lucide-react';
-import { telefoneInternacional } from '../utils/formato';
-import type { ContatoEmergencia } from '../types';
+import { internationalPhone } from '../utils/format';
+import type { EmergencyContact } from '../types';
 
 interface Props {
-  nome: string;
-  idade?: number;
-  contatos?: ContatoEmergencia[];
-  fotoUrl?: string;
+  name: string;
+  age?: number;
+  contacts?: EmergencyContact[];
+  photoUrl?: string;
 }
 
-export function HeaderPaciente({ nome, idade, contatos = [], fotoUrl }: Props) {
+export function PatientHeader({ name, age, contacts = [], photoUrl }: Props) {
   // Índice do contato cuja localização está sendo obtida (null = nenhum).
-  const [enviandoPara, setEnviandoPara] = useState<number | null>(null);
-  const [erroLocalizacao, setErroLocalizacao] = useState(false);
+  const [sendingTo, setSendingTo] = useState<number | null>(null);
+  const [locationError, setLocationError] = useState(false);
 
   // Abre o WhatsApp do contato escolhido com a posição atual do leitor
   // já digitada (link wa.me). O envio final é confirmado pela pessoa.
-  function enviarLocalizacao(indice: number) {
-    const contato = contatos[indice];
-    if (!contato || !('geolocation' in navigator)) {
-      setErroLocalizacao(true);
+  function sendLocation(index: number) {
+    const contact = contacts[index];
+    if (!contact || !('geolocation' in navigator)) {
+      setLocationError(true);
       return;
     }
-    setErroLocalizacao(false);
-    setEnviandoPara(indice);
+    setLocationError(false);
+    setSendingTo(index);
     navigator.geolocation.getCurrentPosition(
-      (posicao) => {
-        const { latitude, longitude } = posicao.coords;
-        const mapa = `https://maps.google.com/?q=${latitude},${longitude}`;
-        const texto =
-          `Emergência: estou prestando socorro a ${nome} pelo HelpTap. `
-          + `Localização atual: ${mapa}`;
-        const numero = telefoneInternacional(contato.telefone);
-        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
-        setEnviandoPara(null);
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const map = `https://maps.google.com/?q=${latitude},${longitude}`;
+        const text =
+          `Emergência: estou prestando socorro a ${name} pelo HelpTap. `
+          + `Localização atual: ${map}`;
+        const number = internationalPhone(contact.phone);
+        window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank');
+        setSendingTo(null);
       },
       () => {
-        setErroLocalizacao(true);
-        setEnviandoPara(null);
+        setLocationError(true);
+        setSendingTo(null);
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -46,10 +46,10 @@ export function HeaderPaciente({ nome, idade, contatos = [], fotoUrl }: Props) {
 
   return (
     <header className="flex flex-col items-center gap-3 py-6 text-center">
-      {fotoUrl ? (
+      {photoUrl ? (
         <img
-          src={fotoUrl}
-          alt={`Foto de ${nome}`}
+          src={photoUrl}
+          alt={`Foto de ${name}`}
           className="size-20 rounded-full object-cover shadow-sm"
         />
       ) : (
@@ -58,52 +58,52 @@ export function HeaderPaciente({ nome, idade, contatos = [], fotoUrl }: Props) {
         </span>
       )}
       <div>
-        <h1 className="text-xl font-bold">{nome}</h1>
-        {idade !== undefined && (
+        <h1 className="text-xl font-bold">{name}</h1>
+        {age !== undefined && (
           <p className="mt-0.5 flex items-center justify-center gap-1 text-sm text-slate-500">
             <Calendar aria-hidden className="size-4" />
-            {idade} anos
+            {age} anos
           </p>
         )}
       </div>
-      {contatos.length > 0 && (
+      {contacts.length > 0 && (
         <div className="flex w-full flex-col gap-2">
-          {contatos.map((contato, indice) => (
+          {contacts.map((contact, index) => (
             <div
-              key={`${contato.telefone}-${indice}`}
+              key={`${contact.phone}-${index}`}
               className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
             >
               <div className="min-w-0 text-left">
-                <p className="truncate text-sm font-semibold">{contato.nome}</p>
-                {contatos.length > 1 && (
+                <p className="truncate text-sm font-semibold">{contact.name}</p>
+                {contacts.length > 1 && (
                   <p className="text-xs text-slate-500">
-                    {indice === 0 ? 'Contato principal' : 'Contato alternativo'}
+                    {index === 0 ? 'Contato principal' : 'Contato alternativo'}
                   </p>
                 )}
               </div>
               <div className="flex shrink-0 gap-2">
                 <a
-                  href={`tel:+${telefoneInternacional(contato.telefone)}`}
+                  href={`tel:+${internationalPhone(contact.phone)}`}
                   className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700"
                 >
                   <Phone aria-hidden className="size-4" />
                   Ligar
                 </a>
                 <button
-                  onClick={() => enviarLocalizacao(indice)}
+                  onClick={() => sendLocation(index)}
                   aria-live="polite"
                   className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-60"
-                  disabled={enviandoPara !== null}
+                  disabled={sendingTo !== null}
                 >
                   <MapPin aria-hidden className="size-4" />
-                  {enviandoPara === indice ? 'Localizando…' : 'Localização'}
+                  {sendingTo === index ? 'Localizando…' : 'Localização'}
                 </button>
               </div>
             </div>
           ))}
         </div>
       )}
-      {erroLocalizacao && (
+      {locationError && (
         <p className="text-xs text-red-600">
           Não foi possível obter sua localização. Verifique a permissão do navegador.
         </p>

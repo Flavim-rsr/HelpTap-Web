@@ -1,121 +1,121 @@
 import type {
   AccessLog,
-  CadastroProfissional,
-  Credenciais,
-  PacienteCompleto,
-  PacienteView,
+  Credentials,
+  FullPatientRecord,
+  PatientView,
+  ProfessionalSignupData,
   Role,
-  Sessao,
+  Session,
 } from '../../types';
-import { pacientesMock, usuariosMock, wearablesMock } from './data';
+import { mockPatients, mockUsers, mockWearables } from './data';
 
 /**
  * Espelha a filtragem que o Spring Security + camada de serviços fará no
  * back-end real. Componentes NUNCA filtram — só renderizam o que chega.
  */
-export function filtrarPacientePorRole(p: PacienteCompleto, role: Role): PacienteView {
+export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientView {
   const base = {
-    nome: p.nome,
-    idade: p.idade,
-    contatos: [{ nome: 'Responsável', telefone: p.telefoneResponsavel }],
+    name: p.name,
+    age: p.age,
+    contacts: [{ name: 'Responsável', phone: p.guardianPhone }],
   };
   switch (role) {
     case 'medico':
     case 'usuario':
       return {
         ...base,
-        identificacao: {
+        identification: {
           cpf: p.cpf,
-          endereco: p.endereco,
-          telefoneResponsavel: p.telefoneResponsavel,
-          mae: p.mae,
-          pai: p.pai,
+          address: p.address,
+          guardianPhone: p.guardianPhone,
+          motherName: p.motherName,
+          fatherName: p.fatherName,
         },
-        fichaMedica: p.fichaMedica,
-        alergias: p.alergias,
-        doencas: p.doencas,
-        transtornos: p.transtornos,
-        deficiencias: p.deficiencias,
+        medicalRecord: p.medicalRecord,
+        allergies: p.allergies,
+        illnesses: p.illnesses,
+        disorders: p.disorders,
+        deficiencies: p.deficiencies,
       };
     case 'policial':
       return {
         ...base,
-        identificacao: {
+        identification: {
           cpf: p.cpf,
-          endereco: p.endereco,
-          telefoneResponsavel: p.telefoneResponsavel,
-          mae: p.mae,
-          pai: p.pai,
+          address: p.address,
+          guardianPhone: p.guardianPhone,
+          motherName: p.motherName,
+          fatherName: p.fatherName,
         },
       };
     case 'bombeiro':
       return {
         ...base,
-        identificacao: {
-          endereco: p.endereco,
-          telefoneResponsavel: p.telefoneResponsavel,
+        identification: {
+          address: p.address,
+          guardianPhone: p.guardianPhone,
         },
-        fichaMedica: p.fichaMedica,
-        alergias: p.alergias,
-        doencas: p.doencas.filter((d) => !d.sensivel),
-        deficiencias: p.deficiencias,
+        medicalRecord: p.medicalRecord,
+        allergies: p.allergies,
+        illnesses: p.illnesses.filter((d) => !d.sensitive),
+        deficiencies: p.deficiencies,
       };
   }
 }
 
 /** Latência artificial que simula a rede; zerada nos testes. */
-export const LATENCIA_MS = import.meta.env.MODE === 'test' ? 0 : 400;
-export const delay = () => new Promise((r) => setTimeout(r, LATENCIA_MS));
+export const LATENCY_MS = import.meta.env.MODE === 'test' ? 0 : 400;
+export const delay = () => new Promise((r) => setTimeout(r, LATENCY_MS));
 
-function novaSessao(role: Role, nome: string, pacienteId?: string): Sessao {
-  return { token: `mock-jwt-${role}-${Date.now()}`, role, nome, pacienteId };
+function newSession(role: Role, name: string, patientId?: string): Session {
+  return { token: `mock-jwt-${role}-${Date.now()}`, role, name, patientId };
 }
 
-export async function mockLogin(role: Role, credenciais: Credenciais): Promise<Sessao> {
+export async function mockLogin(role: Role, credentials: Credentials): Promise<Session> {
   await delay();
-  const usuario = usuariosMock.find(
-    (u) => u.role === role && u.email === credenciais.email && u.senha === credenciais.senha,
+  const user = mockUsers.find(
+    (u) => u.role === role && u.email === credentials.email && u.password === credentials.password,
   );
-  if (!usuario) throw new Error('E-mail ou senha inválidos');
-  return novaSessao(usuario.role, usuario.nome, usuario.pacienteId);
+  if (!user) throw new Error('E-mail ou senha inválidos');
+  return newSession(user.role, user.name, user.patientId);
 }
 
 /**
  * Simula a API mockada de validação de credenciais profissionais do artigo
  * (CRM para médicos, registros funcionais para policiais e bombeiros).
  */
-export function validarRegistro(role: Role, registro: string): boolean {
-  const r = registro.trim();
+export function validateRegistration(role: Role, registration: string): boolean {
+  const r = registration.trim();
   if (role === 'medico') return /^(CRM)?\d{4,7}-[A-Z]{2}$/i.test(r);
   if (role === 'policial') return /^POL\d{4,8}-[A-Z]{2,4}-[A-Z]{2}$/i.test(r);
   return /^CBM\d{4,8}-[A-Z]{2}$/i.test(r);
 }
 
-export async function mockCadastro(role: Role, dados: CadastroProfissional): Promise<Sessao> {
+export async function mockSignUp(role: Role, data: ProfessionalSignupData): Promise<Session> {
   await delay();
-  if (!validarRegistro(role, dados.registro)) {
+  if (!validateRegistration(role, data.registration)) {
     throw new Error('Registro profissional inválido');
   }
-  if (usuariosMock.some((u) => u.email === dados.email)) {
+  if (mockUsers.some((u) => u.email === data.email)) {
     throw new Error('E-mail já cadastrado');
   }
-  usuariosMock.push({ email: dados.email, senha: dados.senha, role, nome: dados.nome });
-  return novaSessao(role, dados.nome);
+  mockUsers.push({ email: data.email, password: data.password, role, name: data.name });
+  return newSession(role, data.name);
 }
 
 /** Trilha de auditoria exigida pela LGPD — entidade AccessLog do artigo. */
 export const accessLogs: AccessLog[] = [];
 
-export async function mockGetPaciente(
+export async function mockGetPatient(
   uuid: string,
   role: Role,
-  pacienteId?: string,
-): Promise<PacienteView> {
+  patientId?: string,
+): Promise<PatientView> {
   await delay();
-  const wearable = wearablesMock.find((w) => w.uuid === uuid);
-  const paciente = wearable && pacientesMock.find((p) => p.id === wearable.pacienteId);
-  if (!wearable || !paciente) throw new Error('PULSEIRA_NAO_ENCONTRADA');
-  if (role === 'usuario' && wearable.pacienteId !== pacienteId) {
+  const wearable = mockWearables.find((w) => w.uuid === uuid);
+  const patient = wearable && mockPatients.find((p) => p.id === wearable.patientId);
+  if (!wearable || !patient) throw new Error('PULSEIRA_NAO_ENCONTRADA');
+  if (role === 'usuario' && wearable.patientId !== patientId) {
     throw new Error('ACESSO_NEGADO');
   }
   accessLogs.push({
@@ -124,5 +124,5 @@ export async function mockGetPaciente(
     role,
     location: 'São Paulo - SP (simulado)',
   });
-  return filtrarPacientePorRole(paciente, role);
+  return filterPatientByRole(patient, role);
 }

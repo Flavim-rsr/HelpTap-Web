@@ -2,15 +2,15 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { RequireAuth } from '../components/RequireAuth';
-import type { Sessao } from '../types';
+import type { Session } from '../types';
 
-const sessaoFake: Sessao = { token: 't', role: 'medico', nome: 'Dra. Carla' };
+const fakeSession: Session = { token: 't', role: 'medico', name: 'Dra. Carla' };
 
 beforeEach(() => sessionStorage.clear());
 
-function Cenario({ inicial }: { inicial: string }) {
+function Scenario({ initial }: { initial: string }) {
   return (
-    <MemoryRouter initialEntries={[inicial]}>
+    <MemoryRouter initialEntries={[initial]}>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<p>Seleção de perfil</p>} />
@@ -29,31 +29,31 @@ function Cenario({ inicial }: { inicial: string }) {
 }
 
 test('sem sessão, redireciona para / e guarda o destino', () => {
-  render(<Cenario inicial="/pulseira/abc-123" />);
+  render(<Scenario initial="/pulseira/abc-123" />);
   expect(screen.getByText('Seleção de perfil')).toBeInTheDocument();
   expect(sessionStorage.getItem('helptap.destino')).toBe('/pulseira/abc-123');
 });
 
 test('com sessão persistida, renderiza a rota protegida', () => {
-  sessionStorage.setItem('helptap.sessao', JSON.stringify(sessaoFake));
-  render(<Cenario inicial="/pulseira/abc-123" />);
+  sessionStorage.setItem('helptap.sessao', JSON.stringify(fakeSession));
+  render(<Scenario initial="/pulseira/abc-123" />);
   expect(screen.getByText('Tela do paciente')).toBeInTheDocument();
 });
 
 test('entrar persiste a sessão e sair limpa', () => {
-  function Sonda() {
-    const { sessao, entrar, sair } = useAuth();
+  function Probe() {
+    const { session, signIn, signOut } = useAuth();
     return (
       <div>
-        <p>{sessao ? sessao.nome : 'anônimo'}</p>
-        <button onClick={() => entrar(sessaoFake)}>entrar</button>
-        <button onClick={() => sair()}>sair</button>
+        <p>{session ? session.name : 'anônimo'}</p>
+        <button onClick={() => signIn(fakeSession)}>entrar</button>
+        <button onClick={() => signOut()}>sair</button>
       </div>
     );
   }
   render(
     <AuthProvider>
-      <Sonda />
+      <Probe />
     </AuthProvider>,
   );
   fireEvent.click(screen.getByText('entrar'));

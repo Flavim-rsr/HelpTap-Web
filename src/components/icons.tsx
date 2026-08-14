@@ -5,7 +5,7 @@
  */
 type Props = { className?: string };
 
-export function IconeRegua({ className }: Props) {
+export function RulerIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 512 512" fill="none" className={className} aria-hidden>
       <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor">
@@ -15,7 +15,7 @@ export function IconeRegua({ className }: Props) {
   );
 }
 
-export function IconePeso({ className }: Props) {
+export function WeightIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 512 512" fill="none" className={className} aria-hidden>
       <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor">
@@ -27,7 +27,7 @@ export function IconePeso({ className }: Props) {
   );
 }
 
-export function IconeAlergia({ className }: Props) {
+export function AllergyIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 512 512" fill="none" className={className} aria-hidden>
       <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor">
@@ -39,7 +39,7 @@ export function IconeAlergia({ className }: Props) {
   );
 }
 
-export function IconeCerebro({ className }: Props) {
+export function BrainIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden>
       <path
@@ -58,7 +58,7 @@ export function IconeCerebro({ className }: Props) {
   );
 }
 
-export function IconeDeficiencia({ className }: Props) {
+export function DeficiencyIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 512 512" fill="none" className={className} aria-hidden>
       <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor">
@@ -70,7 +70,7 @@ export function IconeDeficiencia({ className }: Props) {
   );
 }
 
-export function IconeFichaMedica({ className }: Props) {
+export function MedicalRecordIcon({ className }: Props) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden>
       <path

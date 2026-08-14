@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { CHAVE_DESTINO, useAuth } from '../contexts/AuthContext';
+import { DESTINATION_KEY, useAuth } from '../contexts/AuthContext';
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { sessao } = useAuth();
+  const { session } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
-    if (!sessao) {
-      sessionStorage.setItem(CHAVE_DESTINO, location.pathname);
+    if (!session) {
+      sessionStorage.setItem(DESTINATION_KEY, location.pathname);
     }
-  }, [sessao, location.pathname]);
+  }, [session, location.pathname]);
 
-  if (!sessao) {
+  if (!session) {
     return <Navigate to="/" replace />;
   }
   return children;

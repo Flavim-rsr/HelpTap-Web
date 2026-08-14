@@ -1,94 +1,94 @@
-import type { PacienteCompleto, Role, Wearable } from '../../types';
+import type { FullPatientRecord, Role, Wearable } from '../../types';
 
-export interface UsuarioMock {
+export interface MockUser {
   email: string;
-  senha: string;
+  password: string;
   role: Role;
-  nome: string;
-  /** id do PacienteCompleto vinculado, quando role === 'usuario' */
-  pacienteId?: string;
+  name: string;
+  /** id do FullPatientRecord vinculado, quando role === 'usuario' */
+  patientId?: string;
 }
 
-export const usuariosMock: UsuarioMock[] = [
-  { email: 'medico@helptap.com', senha: '123456', role: 'medico', nome: 'Dra. Carla Mendes' },
-  { email: 'policial@helptap.com', senha: '123456', role: 'policial', nome: 'Sgt. Paulo Lima' },
-  { email: 'bombeiro@helptap.com', senha: '123456', role: 'bombeiro', nome: 'Cb. Marcos Dias' },
+export const mockUsers: MockUser[] = [
+  { email: 'medico@helptap.com', password: '123456', role: 'medico', name: 'Dra. Carla Mendes' },
+  { email: 'policial@helptap.com', password: '123456', role: 'policial', name: 'Sgt. Paulo Lima' },
+  { email: 'bombeiro@helptap.com', password: '123456', role: 'bombeiro', name: 'Cb. Marcos Dias' },
   {
     email: 'rafael@helptap.com',
-    senha: '123456',
+    password: '123456',
     role: 'usuario',
-    nome: 'Rafael Andrade',
-    pacienteId: 'p1',
+    name: 'Rafael Andrade',
+    patientId: 'p1',
   },
 ];
 
-export const pacientesMock: PacienteCompleto[] = [
+export const mockPatients: FullPatientRecord[] = [
   {
     id: 'p1',
-    nome: 'Rafael Andrade',
-    idade: 22,
+    name: 'Rafael Andrade',
+    age: 22,
     cpf: '123.456.789-00',
-    endereco: 'Rua das Flores, 123 - Centro, São Paulo - SP',
-    telefoneResponsavel: '(16) 99223-5555',
-    mae: 'Ana Santos',
-    pai: 'José Santos',
-    fichaMedica: {
-      tipoSanguineo: 'O+',
-      alturaCm: 165,
-      pesoKg: 68,
-      etnia: 'Branco',
-      doadorOrgaos: true,
-      observacoes:
+    address: 'Rua das Flores, 123 - Centro, São Paulo - SP',
+    guardianPhone: '(16) 99223-5555',
+    motherName: 'Ana Santos',
+    fatherName: 'José Santos',
+    medicalRecord: {
+      bloodType: 'O+',
+      heightCm: 165,
+      weightKg: 68,
+      ethnicity: 'Branco',
+      organDonor: true,
+      notes:
         'Paciente com histórico cardiovascular. Necessita acompanhamento contínuo.',
     },
-    alergias: [{ nome: 'Dipirona', criticidade: 'Alta' }],
-    doencas: [
-      { nome: 'Hipertensão', sensivel: false },
-      { nome: 'HIV positivo', sensivel: true },
+    allergies: [{ name: 'Dipirona', severity: 'Alta' }],
+    illnesses: [
+      { name: 'Hipertensão', sensitive: false },
+      { name: 'HIV positivo', sensitive: true },
     ],
-    transtornos: [],
-    deficiencias: [],
+    disorders: [],
+    deficiencies: [],
   },
   {
     id: 'p2',
-    nome: 'Ana Clara Souza',
-    idade: 12,
+    name: 'Ana Clara Souza',
+    age: 12,
     cpf: '987.654.321-00',
-    endereco: 'Av. Brasil, 456 - Jardim América, Franca - SP',
-    telefoneResponsavel: '(16) 98877-1234',
-    mae: 'Mariana Souza',
-    pai: 'Carlos Souza',
-    fichaMedica: {
-      tipoSanguineo: 'A-',
-      alturaCm: 148,
-      pesoKg: 40,
-      etnia: 'Parda',
-      doadorOrgaos: false,
+    address: 'Av. Brasil, 456 - Jardim América, Franca - SP',
+    guardianPhone: '(16) 98877-1234',
+    motherName: 'Mariana Souza',
+    fatherName: 'Carlos Souza',
+    medicalRecord: {
+      bloodType: 'A-',
+      heightCm: 148,
+      weightKg: 40,
+      ethnicity: 'Parda',
+      organDonor: false,
     },
-    alergias: [
-      { nome: 'Amendoim', criticidade: 'Alta' },
-      { nome: 'Poeira', criticidade: 'Baixa' },
+    allergies: [
+      { name: 'Amendoim', severity: 'Alta' },
+      { name: 'Poeira', severity: 'Baixa' },
     ],
-    doencas: [{ nome: 'Asma', sensivel: false }],
-    transtornos: [
+    illnesses: [{ name: 'Asma', sensitive: false }],
+    disorders: [
       {
-        nome: 'Transtorno do Espectro Autista — nível 2',
-        observacao: 'Hipersensibilidade sensorial. Abordar com redução de estímulos.',
+        name: 'Transtorno do Espectro Autista — nível 2',
+        note: 'Hipersensibilidade sensorial. Abordar com redução de estímulos.',
       },
     ],
-    deficiencias: [],
+    deficiencies: [],
   },
 ];
 
-export const wearablesMock: Wearable[] = [
+export const mockWearables: Wearable[] = [
   {
     uuid: '550e8400-e29b-41d4-a716-446655440001',
-    pacienteId: 'p1',
-    nome: 'Pulseira de Rafael Andrade',
+    patientId: 'p1',
+    name: 'Pulseira de Rafael Andrade',
   },
   {
     uuid: '550e8400-e29b-41d4-a716-446655440002',
-    pacienteId: 'p2',
-    nome: 'Pulseira de Ana Clara Souza',
+    patientId: 'p2',
+    name: 'Pulseira de Ana Clara Souza',
   },
 ];

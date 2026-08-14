@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import { PerfilCard } from '../components/PerfilCard';
-import { PERFIS, PERFIS_CADASTRO, PERFIL_CONFIG } from '../styles/perfis';
+import { ProfileCard } from '../components/ProfileCard';
+import { PROFILES, SIGNUP_PROFILES, PROFILE_CONFIG } from '../styles/profiles';
 
-export default function SelecaoPerfil() {
+export default function ProfileSelection() {
   return (
     <main className="grid min-h-screen place-items-center p-4">
       <div className="w-full max-w-md text-center">
@@ -16,19 +16,19 @@ export default function SelecaoPerfil() {
           Selecione seu perfil de acesso para visualizar informações de emergência
         </p>
         <div className="mt-8 flex flex-col gap-4">
-          {PERFIS.map((p) => (
-            <PerfilCard key={p} perfil={p} />
+          {PROFILES.map((p) => (
+            <ProfileCard key={p} profile={p} />
           ))}
         </div>
         <p className="mt-10 text-sm text-slate-500">Profissional ainda não cadastrado?</p>
         <div className="mt-3 flex flex-wrap justify-center gap-2.5">
-          {PERFIS_CADASTRO.map((p) => (
+          {SIGNUP_PROFILES.map((p) => (
             <Link
               key={p}
               to={`/cadastro/${p}`}
-              className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold text-white shadow hover:opacity-90 ${PERFIL_CONFIG[p].corSolida}`}
+              className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold text-white shadow hover:opacity-90 ${PROFILE_CONFIG[p].solidColor}`}
             >
-              Cadastrar {PERFIL_CONFIG[p].tituloCurto ?? PERFIL_CONFIG[p].titulo}
+              Cadastrar {PROFILE_CONFIG[p].shortTitle ?? PROFILE_CONFIG[p].title}
             </Link>
           ))}
         </div>

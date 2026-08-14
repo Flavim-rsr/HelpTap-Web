@@ -3,18 +3,18 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
 import App from '../App';
-import type { Sessao } from '../types';
+import type { Session } from '../types';
 
-const sessaoMedico: Sessao = { token: 't', role: 'medico', nome: 'Dra. Carla Mendes' };
+const doctorSession: Session = { token: 't', role: 'medico', name: 'Dra. Carla Mendes' };
 
 beforeEach(() => {
   sessionStorage.clear();
-  sessionStorage.setItem('helptap.sessao', JSON.stringify(sessaoMedico));
+  sessionStorage.setItem('helptap.sessao', JSON.stringify(doctorSession));
 });
 
-function renderEm(rota: string) {
+function renderAt(route: string) {
   render(
-    <MemoryRouter initialEntries={[rota]}>
+    <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
         <App />
       </AuthProvider>
@@ -23,13 +23,13 @@ function renderEm(rota: string) {
 }
 
 test('mostra quem está conectado e as pulseiras de demonstração', () => {
-  renderEm('/leitura');
+  renderAt('/leitura');
   expect(screen.getByText(/dra\. carla mendes/i)).toBeInTheDocument();
   expect(screen.getByText('Pulseira de Rafael Andrade')).toBeInTheDocument();
 });
 
 test('submeter um código navega para /pulseira/:uuid', async () => {
-  renderEm('/leitura');
+  renderAt('/leitura');
   await userEvent.type(screen.getByLabelText('Código da pulseira'), 'abc-inexistente');
   await userEvent.click(screen.getByRole('button', { name: 'Abrir paciente' }));
   expect(await screen.findByText(/pulseira não vinculada/i)).toBeInTheDocument();
@@ -37,6 +37,6 @@ test('submeter um código navega para /pulseira/:uuid', async () => {
 
 test('sem sessão, /leitura redireciona para a seleção de perfil', () => {
   sessionStorage.clear();
-  renderEm('/leitura');
+  renderAt('/leitura');
   expect(screen.getByRole('heading', { name: /entrar no/i })).toBeInTheDocument();
 });

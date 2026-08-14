@@ -3,18 +3,18 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
 import App from '../App';
 import { accessLogs } from '../api/mock/handlers';
-import type { Role, Sessao } from '../types';
+import type { Role, Session } from '../types';
 
 const UUID_RAFAEL = '550e8400-e29b-41d4-a716-446655440001';
 const UUID_ANA = '550e8400-e29b-41d4-a716-446655440002';
 
 beforeEach(() => sessionStorage.clear());
 
-function renderComo(role: Role, rota: string) {
-  const sessao: Sessao = { token: 't', role, nome: 'Teste' };
-  sessionStorage.setItem('helptap.sessao', JSON.stringify(sessao));
+function renderAs(role: Role, route: string) {
+  const session: Session = { token: 't', role, name: 'Teste' };
+  sessionStorage.setItem('helptap.sessao', JSON.stringify(session));
   render(
-    <MemoryRouter initialEntries={[rota]}>
+    <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
         <App />
       </AuthProvider>
@@ -23,7 +23,7 @@ function renderComo(role: Role, rota: string) {
 }
 
 test('médico vê ficha completa, alergias com criticidade e transtornos', async () => {
-  renderComo('medico', `/pulseira/${UUID_ANA}`);
+  renderAs('medico', `/pulseira/${UUID_ANA}`);
   expect(await screen.findByText('Ana Clara Souza')).toBeInTheDocument();
   expect(screen.getByText('A-')).toBeInTheDocument();
   expect(screen.getByText('Amendoim')).toBeInTheDocument();
@@ -32,7 +32,7 @@ test('médico vê ficha completa, alergias com criticidade e transtornos', async
 });
 
 test('policial vê identificação civil e NENHUM dado clínico', async () => {
-  renderComo('policial', `/pulseira/${UUID_RAFAEL}`);
+  renderAs('policial', `/pulseira/${UUID_RAFAEL}`);
   expect(await screen.findByText('Rafael Andrade')).toBeInTheDocument();
   expect(screen.getByText('123.456.789-00')).toBeInTheDocument();
   expect(screen.getByText('Ana Santos')).toBeInTheDocument();
@@ -42,7 +42,7 @@ test('policial vê identificação civil e NENHUM dado clínico', async () => {
 });
 
 test('bombeiro vê ficha essencial sem CPF, filiação nem doenças sensíveis', async () => {
-  renderComo('bombeiro', `/pulseira/${UUID_RAFAEL}`);
+  renderAs('bombeiro', `/pulseira/${UUID_RAFAEL}`);
   expect(await screen.findByText('O+')).toBeInTheDocument();
   expect(screen.getByText('Dipirona')).toBeInTheDocument();
   expect(screen.queryByText('123.456.789-00')).not.toBeInTheDocument();
@@ -51,13 +51,13 @@ test('bombeiro vê ficha essencial sem CPF, filiação nem doenças sensíveis',
 });
 
 test('uuid desconhecido mostra tela de pulseira não vinculada', async () => {
-  renderComo('medico', '/pulseira/nao-existe');
+  renderAs('medico', '/pulseira/nao-existe');
   expect(await screen.findByText(/pulseira não vinculada/i)).toBeInTheDocument();
 });
 
 test('a leitura registra um AccessLog', async () => {
-  const antes = accessLogs.length;
-  renderComo('medico', `/pulseira/${UUID_RAFAEL}`);
+  const before = accessLogs.length;
+  renderAs('medico', `/pulseira/${UUID_RAFAEL}`);
   await screen.findByText('Rafael Andrade');
-  expect(accessLogs.length).toBeGreaterThan(antes);
+  expect(accessLogs.length).toBeGreaterThan(before);
 });

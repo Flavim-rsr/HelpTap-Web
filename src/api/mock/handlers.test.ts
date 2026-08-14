@@ -1,46 +1,46 @@
-import { filtrarPacientePorRole } from './handlers';
-import { pacientesMock } from './data';
+import { filterPatientByRole } from './handlers';
+import { mockPatients } from './data';
 
-const rafael = pacientesMock[0]; // tem doença sensível e ficha completa
-const anaClara = pacientesMock[1]; // tem TEA (transtorno)
+const rafael = mockPatients[0]; // tem doença sensível e ficha completa
+const anaClara = mockPatients[1]; // tem TEA (transtorno)
 
 test('médico recebe o prontuário completo', () => {
-  const v = filtrarPacientePorRole(rafael, 'medico');
-  expect(v.identificacao.cpf).toBe(rafael.cpf);
-  expect(v.identificacao.mae).toBe(rafael.mae);
-  expect(v.fichaMedica?.observacoes).toBeTruthy();
-  expect(v.alergias).toHaveLength(rafael.alergias.length);
-  expect(v.doencas?.some((d) => d.sensivel)).toBe(true);
-  expect(filtrarPacientePorRole(anaClara, 'medico').transtornos?.length).toBeGreaterThan(0);
+  const v = filterPatientByRole(rafael, 'medico');
+  expect(v.identification.cpf).toBe(rafael.cpf);
+  expect(v.identification.motherName).toBe(rafael.motherName);
+  expect(v.medicalRecord?.notes).toBeTruthy();
+  expect(v.allergies).toHaveLength(rafael.allergies.length);
+  expect(v.illnesses?.some((d) => d.sensitive)).toBe(true);
+  expect(filterPatientByRole(anaClara, 'medico').disorders?.length).toBeGreaterThan(0);
 });
 
 test('policial recebe SOMENTE identificação civil — nunca dados clínicos', () => {
-  const v = filtrarPacientePorRole(rafael, 'policial');
-  expect(v.identificacao.cpf).toBe(rafael.cpf);
-  expect(v.identificacao.mae).toBe(rafael.mae);
-  expect(v.fichaMedica).toBeUndefined();
-  expect(v.alergias).toBeUndefined();
-  expect(v.doencas).toBeUndefined();
-  expect(v.transtornos).toBeUndefined();
-  expect(v.deficiencias).toBeUndefined();
+  const v = filterPatientByRole(rafael, 'policial');
+  expect(v.identification.cpf).toBe(rafael.cpf);
+  expect(v.identification.motherName).toBe(rafael.motherName);
+  expect(v.medicalRecord).toBeUndefined();
+  expect(v.allergies).toBeUndefined();
+  expect(v.illnesses).toBeUndefined();
+  expect(v.disorders).toBeUndefined();
+  expect(v.deficiencies).toBeUndefined();
 });
 
 test('bombeiro recebe ficha essencial sem CPF, sem filiação, sem dados sensíveis', () => {
-  const v = filtrarPacientePorRole(rafael, 'bombeiro');
-  expect(v.identificacao.cpf).toBeUndefined();
-  expect(v.identificacao.mae).toBeUndefined();
-  expect(v.identificacao.pai).toBeUndefined();
-  expect(v.identificacao.endereco).toBe(rafael.endereco);
-  expect(v.fichaMedica?.tipoSanguineo).toBe(rafael.fichaMedica.tipoSanguineo);
-  expect(v.alergias).toHaveLength(rafael.alergias.length);
-  expect(v.doencas?.every((d) => !d.sensivel)).toBe(true);
-  expect(v.deficiencias).toBeDefined();
-  expect(filtrarPacientePorRole(anaClara, 'bombeiro').transtornos).toBeUndefined();
+  const v = filterPatientByRole(rafael, 'bombeiro');
+  expect(v.identification.cpf).toBeUndefined();
+  expect(v.identification.motherName).toBeUndefined();
+  expect(v.identification.fatherName).toBeUndefined();
+  expect(v.identification.address).toBe(rafael.address);
+  expect(v.medicalRecord?.bloodType).toBe(rafael.medicalRecord.bloodType);
+  expect(v.allergies).toHaveLength(rafael.allergies.length);
+  expect(v.illnesses?.every((d) => !d.sensitive)).toBe(true);
+  expect(v.deficiencies).toBeDefined();
+  expect(filterPatientByRole(anaClara, 'bombeiro').disorders).toBeUndefined();
 });
 
 test('titular (usuario) vê os próprios dados completos', () => {
-  const v = filtrarPacientePorRole(rafael, 'usuario');
-  expect(v.identificacao.cpf).toBe(rafael.cpf);
-  expect(v.fichaMedica).toBeDefined();
-  expect(v.doencas?.some((d) => d.sensivel)).toBe(true);
+  const v = filterPatientByRole(rafael, 'usuario');
+  expect(v.identification.cpf).toBe(rafael.cpf);
+  expect(v.medicalRecord).toBeDefined();
+  expect(v.illnesses?.some((d) => d.sensitive)).toBe(true);
 });

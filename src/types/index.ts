@@ -1,87 +1,87 @@
 export type Role = 'medico' | 'policial' | 'bombeiro' | 'usuario';
 
-export type Criticidade = 'Baixa' | 'Media' | 'Alta' | 'Critica';
+export type Severity = 'Baixa' | 'Media' | 'Alta' | 'Critica';
 
-export interface Alergia {
-  nome: string;
-  criticidade: Criticidade;
+export interface Allergy {
+  name: string;
+  severity: Severity;
 }
 
-export interface Doenca {
-  nome: string;
+export interface Illness {
+  name: string;
   /** espelha Illness.is_sensitive do artigo — visível apenas para médico/titular */
-  sensivel: boolean;
+  sensitive: boolean;
 }
 
-export interface Transtorno {
-  nome: string;
-  observacao?: string;
+export interface Disorder {
+  name: string;
+  note?: string;
 }
 
-export interface Deficiencia {
-  nome: string;
+export interface Deficiency {
+  name: string;
 }
 
-export interface FichaMedica {
-  tipoSanguineo: string;
-  alturaCm: number;
-  pesoKg: number;
-  etnia: string;
-  doadorOrgaos: boolean;
-  observacoes?: string;
+export interface MedicalRecordData {
+  bloodType: string;
+  heightCm: number;
+  weightKg: number;
+  ethnicity: string;
+  organDonor: boolean;
+  notes?: string;
 }
 
-export interface ContatoEmergencia {
-  nome: string;
-  telefone: string;
+export interface EmergencyContact {
+  name: string;
+  phone: string;
 }
 
-export interface Identificacao {
+export interface Identification {
   cpf?: string;
-  endereco?: string;
-  telefoneResponsavel?: string;
-  mae?: string;
-  pai?: string;
+  address?: string;
+  guardianPhone?: string;
+  motherName?: string;
+  fatherName?: string;
 }
 
 /** O que a API devolve para /pulseira/:uuid — já filtrado por perfil */
-export interface PacienteView {
-  nome: string;
+export interface PatientView {
+  name: string;
   /** Ausente quando o backend não expõe a data de nascimento no perfil. */
-  idade?: number;
+  age?: number;
   /** Foto de perfil (data URI), quando o titular cadastrou uma. */
-  fotoUrl?: string;
-  identificacao: Identificacao;
+  photoUrl?: string;
+  identification: Identification;
   /** Ordem segue os slots do app: índice 0 = principal, 1 = alternativo. */
-  contatos?: ContatoEmergencia[];
-  fichaMedica?: FichaMedica;
-  alergias?: Alergia[];
-  doencas?: Doenca[];
-  transtornos?: Transtorno[];
-  deficiencias?: Deficiencia[];
+  contacts?: EmergencyContact[];
+  medicalRecord?: MedicalRecordData;
+  allergies?: Allergy[];
+  illnesses?: Illness[];
+  disorders?: Disorder[];
+  deficiencies?: Deficiency[];
 }
 
 /** Registro completo, existe apenas dentro do mock (papel do banco) */
-export interface PacienteCompleto {
+export interface FullPatientRecord {
   id: string;
-  nome: string;
-  idade: number;
+  name: string;
+  age: number;
   cpf: string;
-  endereco: string;
-  telefoneResponsavel: string;
-  mae: string;
-  pai: string;
-  fichaMedica: FichaMedica;
-  alergias: Alergia[];
-  doencas: Doenca[];
-  transtornos: Transtorno[];
-  deficiencias: Deficiencia[];
+  address: string;
+  guardianPhone: string;
+  motherName: string;
+  fatherName: string;
+  medicalRecord: MedicalRecordData;
+  allergies: Allergy[];
+  illnesses: Illness[];
+  disorders: Disorder[];
+  deficiencies: Deficiency[];
 }
 
 export interface Wearable {
   uuid: string;
-  pacienteId: string;
-  nome: string;
+  patientId: string;
+  name: string;
 }
 
 export interface AccessLog {
@@ -91,27 +91,27 @@ export interface AccessLog {
   location: string;
 }
 
-export interface Sessao {
+export interface Session {
   token: string;
   /** id do usuário no backend; ausente nas sessões de demonstração (mock). */
   userId?: number;
   role: Role;
-  nome: string;
-  /** id do PacienteCompleto vinculado a este usuário, quando role === 'usuario' */
-  pacienteId?: string;
+  name: string;
+  /** id do FullPatientRecord vinculado a este usuário, quando role === 'usuario' */
+  patientId?: string;
 }
 
-export interface Credenciais {
+export interface Credentials {
   email: string;
-  senha: string;
+  password: string;
 }
 
-export interface CadastroProfissional {
-  nome: string;
+export interface ProfessionalSignupData {
+  name: string;
   cpf: string;
   email: string;
-  telefone: string;
-  senha: string;
+  phone: string;
+  password: string;
   /** CRM (médico) ou registro funcional (policial/bombeiro) */
-  registro: string;
+  registration: string;
 }

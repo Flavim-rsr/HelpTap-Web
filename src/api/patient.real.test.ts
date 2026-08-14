@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { getPacienteByUuid } from './paciente';
+import { getPatientByUuid } from './patient';
 
-const RESPOSTA = {
+const RESPONSE = {
   accessLogId: 9,
   accessLevel: 'PROFESSIONAL',
   professionalProfile: {
@@ -27,9 +27,9 @@ const RESPOSTA = {
   },
 };
 
-const DADOS_BASICOS = { dateBirth: '2002-05-22', userPicture: 'data:image/jpeg;base64,Zm90bw==' };
+const BASIC_DATA = { dateBirth: '2002-05-22', userPicture: 'data:image/jpeg;base64,Zm90bw==' };
 
-function stubFetch(body: unknown, basicos: unknown = DADOS_BASICOS) {
+function stubFetch(body: unknown, basicData: unknown = BASIC_DATA) {
   const fetchMock = vi
     .fn()
     .mockResolvedValueOnce({
@@ -40,7 +40,7 @@ function stubFetch(body: unknown, basicos: unknown = DADOS_BASICOS) {
     .mockResolvedValueOnce({
       ok: true,
       status: 200,
-      text: () => Promise.resolve(JSON.stringify(basicos)),
+      text: () => Promise.resolve(JSON.stringify(basicData)),
     });
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
@@ -56,40 +56,40 @@ afterEach(() => {
 });
 
 test('mapeia a leitura profissional real para a visão do paciente', async () => {
-  const fetchMock = stubFetch(RESPOSTA);
+  const fetchMock = stubFetch(RESPONSE);
 
-  const paciente = await getPacienteByUuid('uuid-1', 'medico', undefined, 'jwt');
+  const patient = await getPatientByUuid('uuid-1', 'medico', undefined, 'jwt');
 
   expect(fetchMock).toHaveBeenCalledWith(
     'https://api.teste/api/nfc/read/uuid-1/professional',
     expect.objectContaining({ method: 'POST' }),
   );
-  expect(paciente.nome).toBe('Rafael Andrade');
-  expect(paciente.idade).toBeGreaterThanOrEqual(24);
-  expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
+  expect(patient.name).toBe('Rafael Andrade');
+  expect(patient.age).toBeGreaterThanOrEqual(24);
+  expect(patient.photoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
   expect(fetchMock.mock.calls[1][0]).toBe('https://api.teste/api/users/7');
-  expect(paciente.identificacao.telefoneResponsavel).toBe('(16) 99223-5555');
-  expect(paciente.contatos).toEqual([
-    { nome: 'Maria', telefone: '(16) 99223-5555' },
-    { nome: 'João', telefone: '(16) 98877-1234' },
+  expect(patient.identification.guardianPhone).toBe('(16) 99223-5555');
+  expect(patient.contacts).toEqual([
+    { name: 'Maria', phone: '(16) 99223-5555' },
+    { name: 'João', phone: '(16) 98877-1234' },
   ]);
-  expect(paciente.fichaMedica).toEqual({
-    tipoSanguineo: 'O+',
-    alturaCm: 170,
-    pesoKg: 70.5,
-    etnia: 'Pardo',
-    doadorOrgaos: true,
-    observacoes: 'Histórico cardiovascular.',
+  expect(patient.medicalRecord).toEqual({
+    bloodType: 'O+',
+    heightCm: 170,
+    weightKg: 70.5,
+    ethnicity: 'Pardo',
+    organDonor: true,
+    notes: 'Histórico cardiovascular.',
   });
-  expect(paciente.alergias).toEqual([{ nome: 'Dipirona', criticidade: 'Critica' }]);
-  expect(paciente.doencas).toEqual([{ nome: 'Diabetes tipo 2', sensivel: true }]);
-  expect(paciente.transtornos).toEqual([{ nome: 'TDAH', observacao: 'Moderado, Acompanhamento' }]);
-  expect(paciente.deficiencias).toEqual([{ nome: 'Auditiva' }]);
+  expect(patient.allergies).toEqual([{ name: 'Dipirona', severity: 'Critica' }]);
+  expect(patient.illnesses).toEqual([{ name: 'Diabetes tipo 2', sensitive: true }]);
+  expect(patient.disorders).toEqual([{ name: 'TDAH', note: 'Moderado, Acompanhamento' }]);
+  expect(patient.deficiencies).toEqual([{ name: 'Auditiva' }]);
 });
 
 test('perfil sem ficha médica e sem listas vem só com o essencial', async () => {
   stubFetch({
-    ...RESPOSTA,
+    ...RESPONSE,
     professionalProfile: {
       userId: 7,
       fullName: 'Rafael Andrade',
@@ -103,19 +103,19 @@ test('perfil sem ficha médica e sem listas vem só com o essencial', async () =
     },
   });
 
-  const paciente = await getPacienteByUuid('uuid-1', 'policial', undefined, 'jwt');
+  const patient = await getPatientByUuid('uuid-1', 'policial', undefined, 'jwt');
 
-  expect(paciente.fichaMedica).toBeUndefined();
-  expect(paciente.fotoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
-  expect(paciente.alergias).toBeUndefined();
-  expect(paciente.contatos).toBeUndefined();
-  expect(paciente.identificacao).toEqual({});
+  expect(patient.medicalRecord).toBeUndefined();
+  expect(patient.photoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
+  expect(patient.allergies).toBeUndefined();
+  expect(patient.contacts).toBeUndefined();
+  expect(patient.identification).toEqual({});
 });
 
 test('titular não abre pulseira de outra pessoa', async () => {
-  stubFetch(RESPOSTA);
+  stubFetch(RESPONSE);
 
-  await expect(getPacienteByUuid('uuid-1', 'usuario', '999', 'jwt')).rejects.toThrow(
+  await expect(getPatientByUuid('uuid-1', 'usuario', '999', 'jwt')).rejects.toThrow(
     'ACESSO_NEGADO',
   );
 });
@@ -133,7 +133,7 @@ test('erro do back chega com a mensagem original (ex.: pulseira desativada)', as
     }),
   );
 
-  await expect(getPacienteByUuid('uuid-1', 'medico', undefined, 'jwt')).rejects.toThrow(
+  await expect(getPatientByUuid('uuid-1', 'medico', undefined, 'jwt')).rejects.toThrow(
     /desativada/,
   );
 });

@@ -1,22 +1,22 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { Sessao } from '../types';
+import type { Session } from '../types';
 
-const CHAVE_SESSAO = 'helptap.sessao';
-export const CHAVE_DESTINO = 'helptap.destino';
+const SESSION_KEY = 'helptap.sessao';
+export const DESTINATION_KEY = 'helptap.destino';
 
 interface AuthContextValue {
-  sessao: Sessao | null;
-  entrar: (s: Sessao) => void;
-  sair: () => void;
+  session: Session | null;
+  signIn: (s: Session) => void;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function lerSessaoSalva(): Sessao | null {
-  const salvo = sessionStorage.getItem(CHAVE_SESSAO);
-  if (!salvo) return null;
+function readStoredSession(): Session | null {
+  const stored = sessionStorage.getItem(SESSION_KEY);
+  if (!stored) return null;
   try {
-    return JSON.parse(salvo) as Sessao;
+    return JSON.parse(stored) as Session;
   } catch {
     // valor corrompido em sessionStorage não deve derrubar a aplicação
     return null;
@@ -24,19 +24,19 @@ function lerSessaoSalva(): Sessao | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [sessao, setSessao] = useState<Sessao | null>(lerSessaoSalva);
+  const [session, setSession] = useState<Session | null>(readStoredSession);
 
-  const entrar = (s: Sessao) => {
-    sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(s));
-    setSessao(s);
+  const signIn = (s: Session) => {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    setSession(s);
   };
 
-  const sair = () => {
-    sessionStorage.removeItem(CHAVE_SESSAO);
-    setSessao(null);
+  const signOut = () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    setSession(null);
   };
 
-  return <AuthContext.Provider value={{ sessao, entrar, sair }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ session, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {

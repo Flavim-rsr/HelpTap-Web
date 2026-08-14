@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { uuidDaMinhaPulseira, uuidDoLink } from './wearables';
+import { getMyWearableUuid, uuidFromLink } from './wearables';
 
 beforeEach(() => {
   vi.stubEnv('VITE_API_URL', 'https://api.teste');
@@ -10,9 +10,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-test('uuidDoLink extrai o último segmento do link da pulseira', () => {
-  expect(uuidDoLink('https://x.app/pulseira/abc-123')).toBe('abc-123');
-  expect(uuidDoLink('https://x.app/pulseira/abc-123/')).toBe('abc-123');
+test('uuidFromLink extrai o último segmento do link da pulseira', () => {
+  expect(uuidFromLink('https://x.app/pulseira/abc-123')).toBe('abc-123');
+  expect(uuidFromLink('https://x.app/pulseira/abc-123/')).toBe('abc-123');
 });
 
 test('prefere a pulseira ativa do titular', async () => {
@@ -31,7 +31,7 @@ test('prefere a pulseira ativa do titular', async () => {
     }),
   );
 
-  expect(await uuidDaMinhaPulseira('7', 'jwt')).toBe('bbb');
+  expect(await getMyWearableUuid('7', 'jwt')).toBe('bbb');
 });
 
 test('sem pulseiras devolve null', async () => {
@@ -40,5 +40,5 @@ test('sem pulseiras devolve null', async () => {
     vi.fn().mockResolvedValue({ ok: true, status: 200, text: () => Promise.resolve('[]') }),
   );
 
-  expect(await uuidDaMinhaPulseira('7', 'jwt')).toBeNull();
+  expect(await getMyWearableUuid('7', 'jwt')).toBeNull();
 });
