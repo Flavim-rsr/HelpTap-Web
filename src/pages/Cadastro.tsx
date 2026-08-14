@@ -6,6 +6,7 @@ import { CHAVE_DESTINO, useAuth } from '../contexts/AuthContext';
 import { InputComIcone } from '../components/InputComIcone';
 import { BotaoPerfil } from '../components/BotaoPerfil';
 import { PERFIL_CONFIG, PERFIS_CADASTRO, ehPerfil } from '../styles/perfis';
+import { formatarCpf, formatarTelefone } from '../utils/formato';
 import NotFound from './NotFound';
 
 export default function Cadastro() {
@@ -20,10 +21,18 @@ export default function Cadastro() {
   const cfg = PERFIL_CONFIG[perfil];
   const Icone = cfg.Icone;
 
+  // A máscara vive só na tela; o envio tira a pontuação (soDigitos no cadastrar).
+  const MASCARAS: Partial<Record<keyof typeof form, (valor: string) => string>> = {
+    cpf: formatarCpf,
+    telefone: formatarTelefone,
+  };
+
   const campo = (nome: keyof typeof form) => ({
     value: form[nome],
-    onChange: (e: ChangeEvent<HTMLInputElement>) =>
-      setForm((f) => ({ ...f, [nome]: e.target.value })),
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      const valor = MASCARAS[nome]?.(e.target.value) ?? e.target.value;
+      setForm((f) => ({ ...f, [nome]: valor }));
+    },
   });
 
   async function aoEnviar(e: FormEvent) {

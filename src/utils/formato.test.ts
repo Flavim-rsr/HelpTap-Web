@@ -1,5 +1,12 @@
 import { expect, test } from 'vitest';
-import { alturaMetros, idadeDe, pesoKg, telefoneInternacional } from './formato';
+import {
+  alturaMetros,
+  formatarCpf,
+  formatarTelefone,
+  idadeDe,
+  pesoKg,
+  telefoneInternacional,
+} from './formato';
 
 test('altura em cm vira metros com vírgula, como no app', () => {
   expect(alturaMetros(170)).toBe('1,70 m');
@@ -19,4 +26,21 @@ test('idade considera aniversário já feito ou não', () => {
 test('telefone ganha 55 uma única vez', () => {
   expect(telefoneInternacional('(16) 99971-9918')).toBe('5516999719918');
   expect(telefoneInternacional('5516999719918')).toBe('5516999719918');
+});
+
+test('cpf é mascarado conforme se digita e ignora o excedente', () => {
+  expect(formatarCpf('529')).toBe('529');
+  expect(formatarCpf('52998')).toBe('529.98');
+  expect(formatarCpf('529982247')).toBe('529.982.247');
+  expect(formatarCpf('52998224725')).toBe('529.982.247-25');
+  expect(formatarCpf('529982247259999')).toBe('529.982.247-25');
+  expect(formatarCpf('529.982.247-25')).toBe('529.982.247-25');
+});
+
+test('telefone é mascarado para fixo e celular', () => {
+  expect(formatarTelefone('')).toBe('');
+  expect(formatarTelefone('16')).toBe('(16');
+  expect(formatarTelefone('169997')).toBe('(16) 9997');
+  expect(formatarTelefone('1633334444')).toBe('(16) 3333-4444');
+  expect(formatarTelefone('16999719918')).toBe('(16) 99971-9918');
 });
