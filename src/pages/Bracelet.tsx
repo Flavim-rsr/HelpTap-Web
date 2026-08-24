@@ -98,7 +98,7 @@ export default function Bracelet() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4 pb-10">
       {session?.role === 'usuario' ? (
-        // Para o titular não existe "nova leitura": a volta é sair da conta.
+        // Para o titular a volta é sair da conta; profissionais vão à própria conta.
         <button
           onClick={() => {
             signOut();
@@ -109,8 +109,8 @@ export default function Bracelet() {
           ← Sair
         </button>
       ) : (
-        <Link to="/leitura" className="text-sm text-slate-500 hover:text-slate-700">
-          ← Nova leitura
+        <Link to="/conta" className="text-sm text-slate-500 hover:text-slate-700">
+          ← Minha conta
         </Link>
       )}
       <PatientHeader
