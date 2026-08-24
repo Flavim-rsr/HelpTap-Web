@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, UserRound } from 'lucide-react';
 import { ApiError } from '../api/client';
 import { deleteAccount, getMyAccount, updateAccount, type MyAccount } from '../api/account';
@@ -116,9 +116,15 @@ export default function Account() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 p-4 pb-10">
-      <Link to="/leitura" className="text-sm text-slate-500 hover:text-slate-700">
-        ← Voltar à leitura
-      </Link>
+      <button
+        onClick={() => {
+          signOut();
+          navigate('/');
+        }}
+        className="self-start text-sm text-slate-500 hover:text-slate-700"
+      >
+        ← Sair
+      </button>
 
       <div className="text-center">
         <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-white shadow-sm">

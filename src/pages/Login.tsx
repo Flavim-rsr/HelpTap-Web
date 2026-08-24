@@ -6,6 +6,7 @@ import { DESTINATION_KEY, useAuth } from '../contexts/AuthContext';
 import { IconInput } from '../components/IconInput';
 import { ProfileButton } from '../components/ProfileButton';
 import { PROFILE_CONFIG, isProfile } from '../styles/profiles';
+import { getMyWearableUuid } from '../api/wearables';
 import NotFound from './NotFound';
 
 export default function Login() {
@@ -32,7 +33,19 @@ export default function Login() {
       signIn(session);
       const destination = sessionStorage.getItem(DESTINATION_KEY);
       sessionStorage.removeItem(DESTINATION_KEY);
-      navigate(destination ?? '/leitura', { replace: true });
+      if (destination) {
+        navigate(destination, { replace: true });
+        return;
+      }
+      // O titular vai direto aos próprios dados; sem pulseira, cai na conta.
+      if (profile === 'usuario' && session.patientId) {
+        const uuid = await getMyWearableUuid(session.patientId, session.token).catch(() => null);
+        if (uuid) {
+          navigate(`/pulseira/${uuid}`, { replace: true });
+          return;
+        }
+      }
+      navigate('/conta', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao entrar');
     } finally {

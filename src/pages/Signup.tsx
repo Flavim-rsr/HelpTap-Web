@@ -46,7 +46,7 @@ export default function Signup() {
       signIn(session);
       const destination = sessionStorage.getItem(DESTINATION_KEY);
       sessionStorage.removeItem(DESTINATION_KEY);
-      navigate(destination ?? '/leitura', { replace: true });
+      navigate(destination ?? '/conta', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao cadastrar');
     } finally {

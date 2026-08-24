@@ -73,21 +73,15 @@ export default function Bracelet() {
           <p className="mt-1 text-sm text-slate-500">
             {errorMessage || 'Nenhum paciente está associado a este código.'}
           </p>
-          {session?.role === 'usuario' ? (
-            <button
-              onClick={() => {
-                signOut();
-                navigate('/');
-              }}
-              className="mt-4 inline-block text-brand"
-            >
-              Sair
-            </button>
-          ) : (
-            <Link to="/leitura" className="mt-4 inline-block text-brand underline">
-              Voltar à leitura
-            </Link>
-          )}
+          <button
+            onClick={() => {
+              signOut();
+              navigate('/');
+            }}
+            className="mt-4 inline-block text-brand"
+          >
+            Sair
+          </button>
         </div>
       </main>
     );

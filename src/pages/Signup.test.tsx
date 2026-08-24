@@ -34,7 +34,7 @@ test('cadastro de médico exibe campo CRM e rejeita registro inválido', async (
   expect(await screen.findByRole('alert')).toHaveTextContent('Registro profissional inválido');
 });
 
-test('cadastro válido cria a conta e navega para /leitura', async () => {
+test('cadastro válido cria a conta e navega para /conta', async () => {
   renderAt('/cadastro/bombeiro');
   await userEvent.type(screen.getByLabelText('Nome Completo'), 'Cb. Nova');
   await userEvent.type(screen.getByLabelText('CPF'), '529.982.247-25');
@@ -43,5 +43,6 @@ test('cadastro válido cria a conta e navega para /leitura', async () => {
   await userEvent.type(screen.getByLabelText('E-mail'), 'nova@helptap.com');
   await userEvent.type(screen.getByLabelText('Senha'), 'senha123');
   await userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
-  expect(await screen.findByText(/leitura de pulseira/i)).toBeInTheDocument();
+  // Em modo mock a conta avisa que precisa do servidor real; basta confirmar a navegação.
+  expect(await screen.findByText(/conta só pode ser gerenciada/i)).toBeInTheDocument();
 });
