@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getPatientByUuid } from './patient';
 
 const RESPONSE = {
@@ -136,4 +136,40 @@ test('erro do back chega com a mensagem original (ex.: pulseira desativada)', as
   await expect(getPatientByUuid('uuid-1', 'medico', undefined, 'jwt')).rejects.toThrow(
     /desativada/,
   );
+});
+
+describe('posição do leitor no corpo da leitura (AccessLog.latitude/longitude)', () => {
+  test('sem geolocalização no navegador, envia corpo vazio', async () => {
+    const fetchMock = stubFetch(RESPONSE);
+    await getPatientByUuid('uuid-1', 'medico', undefined, 'jwt');
+    expect(fetchMock.mock.calls[0][1].body).toBe('{}');
+  });
+
+  test('com posição obtida, envia latitude e longitude', async () => {
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition: (ok: PositionCallback) =>
+          ok({ coords: { latitude: -20.5386, longitude: -47.4008 } } as GeolocationPosition),
+      },
+    });
+    const fetchMock = stubFetch(RESPONSE);
+    await getPatientByUuid('uuid-1', 'medico', undefined, 'jwt');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+      latitude: -20.5386,
+      longitude: -47.4008,
+    });
+  });
+
+  test('com permissão negada ou tempo esgotado, a leitura segue sem coordenadas', async () => {
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition: (_ok: PositionCallback, fail: PositionErrorCallback) =>
+          fail({ code: 1, message: 'denied' } as GeolocationPositionError),
+      },
+    });
+    const fetchMock = stubFetch(RESPONSE);
+    const patient = await getPatientByUuid('uuid-1', 'medico', undefined, 'jwt');
+    expect(fetchMock.mock.calls[0][1].body).toBe('{}');
+    expect(patient.name).toBe('Rafael Andrade');
+  });
 });

@@ -112,6 +112,27 @@ function toPatientView(
   };
 }
 
+/** Corpo de POST /api/nfc/read: o back grava estas coordenadas no AccessLog. */
+type ReadRequest = { latitude?: number; longitude?: number };
+
+/**
+ * Posição do leitor no momento da leitura, para a trilha de auditoria.
+ * Nunca atrasa a emergência: sem geolocalização, permissão negada ou demora
+ * além do limite, a leitura segue sem coordenadas (corpo vazio, como antes).
+ */
+const POSITION_TIMEOUT_MS = 4_000;
+
+export function readerPosition(): Promise<ReadRequest> {
+  if (typeof navigator === 'undefined' || !navigator.geolocation) return Promise.resolve({});
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => resolve({ latitude: coords.latitude, longitude: coords.longitude }),
+      () => resolve({}),
+      { enableHighAccuracy: false, timeout: POSITION_TIMEOUT_MS, maximumAge: 60_000 },
+    );
+  });
+}
+
 export async function getPatientByUuid(
   uuid: string,
   profile: Role,
@@ -121,7 +142,7 @@ export async function getPatientByUuid(
   if (!apiUrl() || !token) return mockGetPatient(uuid, profile, patientId);
 
   const response = await request<ReadResponse>(`/api/nfc/read/${uuid}/professional`, {
-    body: {},
+    body: await readerPosition(),
     token,
   });
 
