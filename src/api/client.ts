@@ -29,6 +29,7 @@ const TRANSLATIONS: Array<[RegExp, string]> = [
   [/unable to validate a credential/i,
     'Não foi possível validar o registro profissional agora. Tente novamente mais tarde.'],
   [/invalid crm format|crm number/i, 'Formato do CRM inválido. Use: CRM123456-SP'],
+  [/invalid coren format|coren number/i, 'Formato do COREN inválido. Use: COREN123456-SP'],
   [/invalid police/i, 'Formato do registro inválido. Use: POL12345-SSP-SP'],
   [/invalid firefighter/i, 'Formato do registro inválido. Use: CBM98765-SP'],
 ];

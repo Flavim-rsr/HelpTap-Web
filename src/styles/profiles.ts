@@ -1,4 +1,4 @@
-import { Flame, Shield, Stethoscope, User, type LucideIcon } from 'lucide-react';
+import { Flame, HeartPulse, Shield, Stethoscope, User, type LucideIcon } from 'lucide-react';
 import type { Role } from '../types';
 
 export interface ProfileInfo {
@@ -15,8 +15,8 @@ export interface ProfileInfo {
   Icon: LucideIcon;
 }
 
-export const PROFILES: Role[] = ['medico', 'policial', 'bombeiro', 'usuario'];
-export const SIGNUP_PROFILES: Role[] = ['medico', 'policial', 'bombeiro'];
+export const PROFILES: Role[] = ['medico', 'policial', 'bombeiro', 'socorrista', 'usuario'];
+export const SIGNUP_PROFILES: Role[] = ['medico', 'policial', 'bombeiro', 'socorrista'];
 
 export function isProfile(v: string): v is Role {
   return (PROFILES as string[]).includes(v);
@@ -46,9 +46,8 @@ export const PROFILE_CONFIG: Record<Role, ProfileInfo> = {
     Icon: Shield,
   },
   bombeiro: {
-    title: 'Bombeiro / Socorrista',
-    shortTitle: 'Bombeiro',
-    accessTitle: 'Acesso Bombeiro / Socorrista',
+    title: 'Bombeiro',
+    accessTitle: 'Acesso Bombeiro',
     description: 'Informações de emergência',
     gradient: 'from-orange-500 to-red-500',
     solidColor: 'bg-orange-600',
@@ -56,6 +55,17 @@ export const PROFILE_CONFIG: Record<Role, ProfileInfo> = {
     registrationLabel: 'Registro funcional',
     registrationPlaceholder: 'CBM98765-SP',
     Icon: Flame,
+  },
+  socorrista: {
+    title: 'Socorrista',
+    accessTitle: 'Acesso Socorrista',
+    description: 'Ficha de emergência com validação COREN',
+    gradient: 'from-rose-500 to-pink-600',
+    solidColor: 'bg-rose-600',
+    textColor: 'text-rose-600',
+    registrationLabel: 'COREN',
+    registrationPlaceholder: 'COREN123456-SP',
+    Icon: HeartPulse,
   },
   usuario: {
     title: 'Próprio Usuário',

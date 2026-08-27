@@ -13,6 +13,7 @@ export const mockUsers: MockUser[] = [
   { email: 'medico@helptap.com', password: '123456', role: 'medico', name: 'Dra. Carla Mendes' },
   { email: 'policial@helptap.com', password: '123456', role: 'policial', name: 'Sgt. Paulo Lima' },
   { email: 'bombeiro@helptap.com', password: '123456', role: 'bombeiro', name: 'Cb. Marcos Dias' },
+  { email: 'socorrista@helptap.com', password: '123456', role: 'socorrista', name: 'Enf. Juliana Rocha' },
   {
     email: 'rafael@helptap.com',
     password: '123456',

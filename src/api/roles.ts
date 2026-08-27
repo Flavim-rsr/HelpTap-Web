@@ -5,10 +5,10 @@ export const BACKEND_ROLE: Record<Role, string> = {
   medico: 'DOCTOR',
   policial: 'POLICE',
   bombeiro: 'FIREFIGHTER',
+  socorrista: 'RESCUER',
   usuario: 'PATIENT',
 };
 
-/** RESCUER (socorrista) entra pelo card de bombeiro até existir card próprio. */
 export function roleFromBackend(role: string): Role | null {
   switch (role) {
     case 'DOCTOR':
@@ -16,8 +16,9 @@ export function roleFromBackend(role: string): Role | null {
     case 'POLICE':
       return 'policial';
     case 'FIREFIGHTER':
-    case 'RESCUER':
       return 'bombeiro';
+    case 'RESCUER':
+      return 'socorrista';
     case 'PATIENT':
       return 'usuario';
     default:

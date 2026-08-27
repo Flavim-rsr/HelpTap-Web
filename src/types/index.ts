@@ -1,4 +1,4 @@
-export type Role = 'medico' | 'policial' | 'bombeiro' | 'usuario';
+export type Role = 'medico' | 'policial' | 'bombeiro' | 'socorrista' | 'usuario';
 
 export type Severity = 'Baixa' | 'Media' | 'Alta' | 'Critica';
 

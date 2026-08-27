@@ -60,6 +60,20 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
         illnesses: p.illnesses.filter((d) => !d.sensitive),
         deficiencies: p.deficiencies,
       };
+    case 'socorrista':
+      // espelha o back real: RESCUER vê doenças sensíveis (ProfileService.canReadSensitiveClinical),
+      // mas não transtornos, CPF nem filiação
+      return {
+        ...base,
+        identification: {
+          address: p.address,
+          guardianPhone: p.guardianPhone,
+        },
+        medicalRecord: p.medicalRecord,
+        allergies: p.allergies,
+        illnesses: p.illnesses,
+        deficiencies: p.deficiencies,
+      };
   }
 }
 
@@ -82,12 +96,13 @@ export async function mockLogin(role: Role, credentials: Credentials): Promise<S
 
 /**
  * Simula a API mockada de validação de credenciais profissionais do artigo
- * (CRM para médicos, registros funcionais para policiais e bombeiros).
+ * (CRM para médicos, COREN para socorristas, registros funcionais para policiais e bombeiros).
  */
 export function validateRegistration(role: Role, registration: string): boolean {
   const r = registration.trim();
   if (role === 'medico') return /^(CRM)?\d{4,7}-[A-Z]{2}$/i.test(r);
   if (role === 'policial') return /^POL\d{4,8}-[A-Z]{2,4}-[A-Z]{2}$/i.test(r);
+  if (role === 'socorrista') return /^(COREN)?\d{4,7}-[A-Z]{2}$/i.test(r);
   return /^CBM\d{4,8}-[A-Z]{2}$/i.test(r);
 }
 

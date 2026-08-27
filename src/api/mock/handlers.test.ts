@@ -38,6 +38,18 @@ test('bombeiro recebe ficha essencial sem CPF, sem filiação, sem dados sensív
   expect(filterPatientByRole(anaClara, 'bombeiro').disorders).toBeUndefined();
 });
 
+test('socorrista recebe ficha essencial como o bombeiro, mas COM doenças sensíveis (RESCUER no back)', () => {
+  const v = filterPatientByRole(rafael, 'socorrista');
+  expect(v.identification.cpf).toBeUndefined();
+  expect(v.identification.motherName).toBeUndefined();
+  expect(v.identification.address).toBe(rafael.address);
+  expect(v.medicalRecord?.bloodType).toBe(rafael.medicalRecord.bloodType);
+  expect(v.allergies).toHaveLength(rafael.allergies.length);
+  expect(v.illnesses?.some((d) => d.sensitive)).toBe(true);
+  expect(v.deficiencies).toBeDefined();
+  expect(filterPatientByRole(anaClara, 'socorrista').disorders).toBeUndefined();
+});
+
 test('titular (usuario) vê os próprios dados completos', () => {
   const v = filterPatientByRole(rafael, 'usuario');
   expect(v.identification.cpf).toBe(rafael.cpf);

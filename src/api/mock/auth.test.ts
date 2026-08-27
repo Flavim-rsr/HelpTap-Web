@@ -32,6 +32,15 @@ test('validateRegistration espelha os formatos do back-end real', () => {
   expect(validateRegistration('policial', '12345678')).toBe(false);
   expect(validateRegistration('bombeiro', 'CBM98765-SP')).toBe(true);
   expect(validateRegistration('bombeiro', 'abc')).toBe(false);
+  expect(validateRegistration('socorrista', 'COREN123456-SP')).toBe(true);
+  expect(validateRegistration('socorrista', '123456-SP')).toBe(true);
+  expect(validateRegistration('socorrista', 'CBM98765-SP')).toBe(false);
+});
+
+test('login como socorrista devolve sessão com role socorrista', async () => {
+  const s = await mockLogin('socorrista', { email: 'socorrista@helptap.com', password: '123456' });
+  expect(s.role).toBe('socorrista');
+  expect(s.name).toBeTruthy();
 });
 
 test('cadastro com registro inválido rejeita; com registro válido cria conta e permite login', async () => {

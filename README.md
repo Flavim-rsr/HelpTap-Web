@@ -2,7 +2,7 @@
 
 Front-end web do ecossistema HelpTap — um Trabalho de Conclusão de Curso (TCC, Uni-FACEF) que
 propõe acesso emergencial a dados médicos por meio de uma pulseira com NFC/QR Code. Ao ler o
-código da pulseira de uma vítima, profissionais autorizados (Médico, Policial, Bombeiro/Socorrista)
+código da pulseira de uma vítima, profissionais autorizados (Médico, Policial, Bombeiro, Socorrista)
 ou o próprio titular visualizam, na hora, apenas as informações que o seu perfil tem permissão de
 ver — identificação, ficha médica, alergias, doenças e transtornos — reduzindo o tempo de resposta
 em situações de emergência.
@@ -32,7 +32,8 @@ Todos os perfis usam a senha `123456`.
 |---|---|---|
 | Médico | medico@helptap.com | acesso completo (identificação, ficha médica, alergias, doenças, transtornos) |
 | Policial | policial@helptap.com | identificação e filiação, sem dados clínicos |
-| Bombeiro/Socorrista | bombeiro@helptap.com | dados essenciais (sem CPF, sem doenças sensíveis) |
+| Bombeiro | bombeiro@helptap.com | dados essenciais (sem CPF, sem doenças sensíveis) |
+| Socorrista | socorrista@helptap.com | dados essenciais + doenças sensíveis (sem CPF, sem transtornos) |
 | Usuário (titular) | rafael@helptap.com | só acessa a própria pulseira |
 
 ## Pulseiras de demonstração
