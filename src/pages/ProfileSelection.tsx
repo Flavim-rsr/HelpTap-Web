@@ -21,12 +21,12 @@ export default function ProfileSelection() {
           ))}
         </div>
         <p className="mt-10 text-sm text-slate-500">Profissional ainda não cadastrado?</p>
-        <div className="mt-3 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
           {SIGNUP_PROFILES.map((p) => (
             <Link
               key={p}
               to={`/cadastro/${p}`}
-              className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold text-white shadow hover:opacity-90 ${PROFILE_CONFIG[p].solidColor}`}
+              className={`block w-full whitespace-nowrap rounded-full px-3 py-2.5 text-center text-xs font-semibold text-white shadow hover:opacity-90 ${PROFILE_CONFIG[p].solidColor}`}
             >
               Cadastrar {PROFILE_CONFIG[p].shortTitle ?? PROFILE_CONFIG[p].title}
             </Link>
