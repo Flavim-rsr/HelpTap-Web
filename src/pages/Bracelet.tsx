@@ -17,6 +17,12 @@ import { SeverityBadge } from '../components/SeverityBadge';
 import { PatientHeader } from '../components/PatientHeader';
 import type { PatientView } from '../types';
 
+// O back recusa a leitura de pulseira desativada com uma mensagem própria; sem
+// isso a tela de erro diria "não vinculada", que é outro caso (uuid inexistente).
+function isDeactivated(message: string): boolean {
+  return /desativada/i.test(message);
+}
+
 function DataRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
@@ -66,10 +72,13 @@ export default function Bracelet() {
   }
 
   if (status === 'error' || !patient) {
+    const deactivated = isDeactivated(errorMessage);
     return (
       <main className="grid min-h-screen place-items-center p-4 text-center">
         <div>
-          <h1 className="text-xl font-bold">Pulseira não vinculada</h1>
+          <h1 className="text-xl font-bold">
+            {deactivated ? 'Pulseira desativada' : 'Pulseira não vinculada'}
+          </h1>
           <p className="mt-1 text-sm text-slate-500">
             {errorMessage || 'Nenhum paciente está associado a este código.'}
           </p>
