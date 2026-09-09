@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { HeartPulse, IdCard, UserRound } from 'lucide-react';
+import { HeartPulse, IdCard, MapPin, UserRound } from 'lucide-react';
 import {
   AllergyIcon,
   BrainIcon,
@@ -96,7 +96,8 @@ export default function Bracelet() {
     );
   }
 
-  const { identification: id, medicalRecord: record } = patient;
+  const { medicalRecord: record, healthInsurance: insurance } = patient;
+  const addresses = patient.identification.addresses ?? [];
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 p-4 pb-10">
@@ -122,17 +123,28 @@ export default function Bracelet() {
         contacts={patient.contacts}
         photoUrl={patient.photoUrl}
       />
-      <SectionCard title="Identificação" Icon={IdCard}>
-        <dl className="flex flex-col gap-2 text-sm">
-          {id.cpf && <DataRow label="CPF" value={id.cpf} />}
-          {id.address && <DataRow label="Endereço" value={id.address} />}
-          {id.guardianPhone && (
-            <DataRow label="Tel. Responsável" value={id.guardianPhone} />
-          )}
-          {id.motherName && <DataRow label="Mãe" value={id.motherName} />}
-          {id.fatherName && <DataRow label="Pai" value={id.fatherName} />}
-        </dl>
-      </SectionCard>
+      {insurance && (
+        <SectionCard title="Convênio Médico" Icon={IdCard}>
+          <dl className="flex flex-col gap-2 text-sm">
+            <DataRow label="Plano de saúde" value={insurance.has ? 'Sim' : 'Não'} />
+            {insurance.has && insurance.number && (
+              <DataRow label="Carteirinha" value={insurance.number} />
+            )}
+          </dl>
+        </SectionCard>
+      )}
+
+      {/* Endereço residencial só chega para o policial; nos demais papéis a
+          lista vem vazia e o cartão não aparece. */}
+      {addresses.length > 0 && (
+        <SectionCard title="Endereço" Icon={MapPin}>
+          <ul className="flex flex-col gap-2 text-sm">
+            {addresses.map((address) => (
+              <li key={address}>{address}</li>
+            ))}
+          </ul>
+        </SectionCard>
+      )}
 
       {record && (
         <SectionCard title="Ficha Médica" Icon={HeartPulse}>

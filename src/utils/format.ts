@@ -48,3 +48,26 @@ export function internationalPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   return digits.startsWith('55') && digits.length > 11 ? digits : `55${digits}`;
 }
+
+/** Partes de AddressResponseDTO do back, como chegam no perfil profissional. */
+export interface AddressParts {
+  street: string | null;
+  number: string | null;
+  neighborhood: string | null;
+  city: string | null;
+  state: string | null;
+  cep: string | null;
+}
+
+/**
+ * Endereço do back em uma linha: "Rua das Flores, 123 - Centro, Franca - SP
+ * (CEP 14400-000)". Campos ausentes simplesmente somem, sem separador solto.
+ */
+export function formatAddress(address: AddressParts): string {
+  const line = [address.street, address.number].filter(Boolean).join(', ');
+  const place = [address.city, address.state].filter(Boolean).join(' - ');
+  const main = [[line, address.neighborhood].filter(Boolean).join(' - '), place]
+    .filter(Boolean)
+    .join(', ');
+  return address.cep ? [main, `CEP ${address.cep}`].filter(Boolean).join(', ') : main;
+}

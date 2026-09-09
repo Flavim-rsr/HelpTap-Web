@@ -38,10 +38,18 @@ export interface EmergencyContact {
 
 export interface Identification {
   cpf?: string;
-  address?: string;
+  /** Endereços residenciais já formatados em uma linha; só o policial os recebe. */
+  addresses?: string[];
   guardianPhone?: string;
   motherName?: string;
   fatherName?: string;
+}
+
+/** Convênio médico do titular — chega em todos os perfis profissionais. */
+export interface HealthInsurance {
+  has: boolean;
+  /** Número da carteirinha; o back só envia quando `has` é verdadeiro. */
+  number?: string;
 }
 
 /** O que a API devolve para /pulseira/:uuid — já filtrado por perfil */
@@ -52,6 +60,7 @@ export interface PatientView {
   /** Foto de perfil (data URI), quando o titular cadastrou uma. */
   photoUrl?: string;
   identification: Identification;
+  healthInsurance?: HealthInsurance;
   /** Ordem segue os slots do app: índice 0 = principal, 1 = alternativo. */
   contacts?: EmergencyContact[];
   medicalRecord?: MedicalRecordData;
@@ -68,6 +77,8 @@ export interface FullPatientRecord {
   age: number;
   cpf: string;
   address: string;
+  hasHealthInsurance: boolean;
+  healthInsuranceNumber?: string;
   guardianPhone: string;
   motherName: string;
   fatherName: string;

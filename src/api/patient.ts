@@ -1,6 +1,6 @@
 import type { PatientView, Role, Severity } from '../types';
 import { apiUrl, request } from './client';
-import { ageFrom } from '../utils/format';
+import { ageFrom, formatAddress } from '../utils/format';
 import { mockGetPatient } from './mock/handlers';
 
 /** Resposta de POST /api/nfc/read/{uuid}/professional (já filtrada por papel no back). */
@@ -11,6 +11,8 @@ type ReadResponse = {
     userId: number;
     fullName: string;
     viewerRole: string;
+    hasHealthInsurance: boolean | null;
+    healthInsuranceNumber: string | null;
     medicalRecord: {
       bloodType: string;
       height: number;
@@ -28,6 +30,15 @@ type ReadResponse = {
     allergies: Array<{ allergenic: string; riskRating: string }> | null;
     deficiencies: Array<{ type: string }> | null;
     emergencyContacts: Array<{ phone: string; phoneOwner: string }> | null;
+    /** Só vem preenchido para POLICE/ADMIN; nos demais papéis chega vazio. */
+    addresses: Array<{
+      cep: string | null;
+      neighborhood: string | null;
+      street: string | null;
+      number: string | null;
+      city: string | null;
+      state: string | null;
+    }> | null;
   };
 };
 
@@ -57,14 +68,27 @@ function toPatientView(
   basicData: BasicData | null,
 ): PatientView {
   const contacts = profile.emergencyContacts ?? [];
+  const addresses = (profile.addresses ?? []).map(formatAddress).filter(Boolean);
   return {
     name: profile.fullName,
     ...(basicData?.dateBirth ? { age: ageFrom(basicData.dateBirth) } : {}),
     ...(basicData?.userPicture ? { photoUrl: basicData.userPicture } : {}),
-    // CPF, endereço e filiação seguem fora do contrato profissional.
+    // CPF e filiação seguem fora do contrato profissional; o endereço só chega
+    // para o policial (ProfileService.canReadAddress) e vem vazio nos demais.
     identification: {
+      ...(addresses.length ? { addresses } : {}),
       ...(contacts[0] ? { guardianPhone: contacts[0].phone } : {}),
     },
+    ...(profile.hasHealthInsurance == null
+      ? {}
+      : {
+          healthInsurance: {
+            has: profile.hasHealthInsurance,
+            ...(profile.healthInsuranceNumber
+              ? { number: profile.healthInsuranceNumber }
+              : {}),
+          },
+        }),
     ...(contacts.length
       ? { contacts: contacts.map((c) => ({ name: c.phoneOwner, phone: c.phone })) }
       : {}),

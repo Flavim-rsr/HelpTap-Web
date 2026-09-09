@@ -18,6 +18,16 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
     name: p.name,
     age: p.age,
     contacts: [{ name: 'Responsável', phone: p.guardianPhone }],
+    // Convênio chega em todos os perfis (ProfileService: hasHealthInsurance).
+    healthInsurance: {
+      has: p.hasHealthInsurance,
+      ...(p.hasHealthInsurance && p.healthInsuranceNumber
+        ? { number: p.healthInsuranceNumber }
+        : {}),
+    },
+    // Transtornos são legíveis por todos os papéis profissionais
+    // (ProfileService.canReadDisorders).
+    disorders: p.disorders,
   };
   switch (role) {
     case 'medico':
@@ -26,7 +36,7 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
         ...base,
         identification: {
           cpf: p.cpf,
-          address: p.address,
+          addresses: [p.address],
           guardianPhone: p.guardianPhone,
           motherName: p.motherName,
           fatherName: p.fatherName,
@@ -34,15 +44,16 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
         medicalRecord: p.medicalRecord,
         allergies: p.allergies,
         illnesses: p.illnesses,
-        disorders: p.disorders,
         deficiencies: p.deficiencies,
       };
     case 'policial':
+      // POLICE é o único papel profissional que recebe o endereço da vítima
+      // (ProfileService.canReadAddress).
       return {
         ...base,
         identification: {
           cpf: p.cpf,
-          address: p.address,
+          addresses: [p.address],
           guardianPhone: p.guardianPhone,
           motherName: p.motherName,
           fatherName: p.fatherName,
@@ -52,7 +63,6 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
       return {
         ...base,
         identification: {
-          address: p.address,
           guardianPhone: p.guardianPhone,
         },
         medicalRecord: p.medicalRecord,
@@ -61,12 +71,11 @@ export function filterPatientByRole(p: FullPatientRecord, role: Role): PatientVi
         deficiencies: p.deficiencies,
       };
     case 'socorrista':
-      // espelha o back real: RESCUER vê doenças sensíveis (ProfileService.canReadSensitiveClinical),
-      // mas não transtornos, CPF nem filiação
+      // espelha o back real: RESCUER vê doenças sensíveis
+      // (ProfileService.canReadSensitiveClinical), mas não CPF, filiação nem endereço
       return {
         ...base,
         identification: {
-          address: p.address,
           guardianPhone: p.guardianPhone,
         },
         medicalRecord: p.medicalRecord,

@@ -31,14 +31,27 @@ test('médico vê ficha completa, alergias com criticidade e transtornos', async
   expect(screen.getByText(/espectro autista/i)).toBeInTheDocument();
 });
 
-test('policial vê identificação civil e NENHUM dado clínico', async () => {
+test('policial vê o endereço da vítima e NENHUM dado clínico da ficha', async () => {
   renderAs('policial', `/pulseira/${UUID_RAFAEL}`);
   expect(await screen.findByText('Rafael Andrade')).toBeInTheDocument();
-  expect(screen.getByText('123.456.789-00')).toBeInTheDocument();
-  expect(screen.getByText('Ana Santos')).toBeInTheDocument();
+  expect(screen.getByText('Endereço')).toBeInTheDocument();
+  expect(screen.getByText(/Rua das Flores, 123/)).toBeInTheDocument();
   expect(screen.queryByText('Ficha Médica')).not.toBeInTheDocument();
   expect(screen.queryByText('O+')).not.toBeInTheDocument();
   expect(screen.queryByText('Dipirona')).not.toBeInTheDocument();
+});
+
+test('bombeiro e socorrista veem transtornos, mas não o endereço da vítima', async () => {
+  renderAs('bombeiro', `/pulseira/${UUID_ANA}`);
+  expect(await screen.findByText(/espectro autista/i)).toBeInTheDocument();
+  expect(screen.queryByText('Endereço')).not.toBeInTheDocument();
+});
+
+test('convênio médico aparece para o profissional que lê a pulseira', async () => {
+  renderAs('socorrista', `/pulseira/${UUID_RAFAEL}`);
+  expect(await screen.findByText('Convênio Médico')).toBeInTheDocument();
+  expect(screen.getByText('1234 5678 9012 3456')).toBeInTheDocument();
+  expect(screen.queryByText('Endereço')).not.toBeInTheDocument();
 });
 
 test('bombeiro vê ficha essencial sem CPF, filiação nem doenças sensíveis', async () => {

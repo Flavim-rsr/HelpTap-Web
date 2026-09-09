@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import {
   ageFrom,
+  formatAddress,
   formatCpf,
   formatPhone,
   heightMeters,
@@ -43,4 +44,28 @@ test('telefone é mascarado para fixo e celular', () => {
   expect(formatPhone('169997')).toBe('(16) 9997');
   expect(formatPhone('1633334444')).toBe('(16) 3333-4444');
   expect(formatPhone('16999719918')).toBe('(16) 99971-9918');
+});
+
+test('endereço do back vira uma linha só, sem separador solto quando falta campo', () => {
+  expect(
+    formatAddress({
+      street: 'Av. Brasil',
+      number: '456',
+      neighborhood: 'Jardim América',
+      city: 'Franca',
+      state: 'SP',
+      cep: '14400-000',
+    }),
+  ).toBe('Av. Brasil, 456 - Jardim América, Franca - SP, CEP 14400-000');
+
+  expect(
+    formatAddress({
+      street: 'Av. Brasil',
+      number: null,
+      neighborhood: null,
+      city: 'Franca',
+      state: 'SP',
+      cep: null,
+    }),
+  ).toBe('Av. Brasil, Franca - SP');
 });

@@ -8,6 +8,8 @@ const RESPONSE = {
     userId: 7,
     fullName: 'Rafael Andrade',
     viewerRole: 'DOCTOR',
+    hasHealthInsurance: true,
+    healthInsuranceNumber: '1234 5678 9012 3456',
     medicalRecord: {
       bloodType: 'O+',
       height: 170,
@@ -24,6 +26,7 @@ const RESPONSE = {
       { phone: '(16) 99223-5555', phoneOwner: 'Maria' },
       { phone: '(16) 98877-1234', phoneOwner: 'João' },
     ],
+    addresses: [],
   },
 };
 
@@ -85,6 +88,50 @@ test('mapeia a leitura profissional real para a visão do paciente', async () =>
   expect(patient.illnesses).toEqual([{ name: 'Diabetes tipo 2', sensitive: true }]);
   expect(patient.disorders).toEqual([{ name: 'TDAH', note: 'Moderado, Acompanhamento' }]);
   expect(patient.deficiencies).toEqual([{ name: 'Auditiva' }]);
+  expect(patient.healthInsurance).toEqual({ has: true, number: '1234 5678 9012 3456' });
+  // Fora do perfil POLICE o back manda a lista vazia — nada de endereço na tela.
+  expect(patient.identification.addresses).toBeUndefined();
+});
+
+test('policial recebe os endereços da vítima formatados em uma linha', async () => {
+  stubFetch({
+    ...RESPONSE,
+    professionalProfile: {
+      ...RESPONSE.professionalProfile,
+      viewerRole: 'POLICE',
+      addresses: [
+        {
+          cep: '14400-000',
+          neighborhood: 'Jardim América',
+          street: 'Av. Brasil',
+          number: '456',
+          city: 'Franca',
+          state: 'SP',
+        },
+      ],
+    },
+  });
+
+  const patient = await getPatientByUuid('uuid-1', 'policial', undefined, 'jwt');
+
+  expect(patient.identification.addresses).toEqual([
+    'Av. Brasil, 456 - Jardim América, Franca - SP, CEP 14400-000',
+  ]);
+});
+
+test('sem plano de saúde, a tela mostra apenas que não há convênio', async () => {
+  stubFetch({
+    ...RESPONSE,
+    professionalProfile: {
+      ...RESPONSE.professionalProfile,
+      hasHealthInsurance: false,
+      healthInsuranceNumber: null,
+    },
+  });
+
+  const patient = await getPatientByUuid('uuid-1', 'medico', undefined, 'jwt');
+
+  expect(patient.healthInsurance).toEqual({ has: false });
 });
 
 test('perfil sem ficha médica e sem listas vem só com o essencial', async () => {
@@ -94,6 +141,9 @@ test('perfil sem ficha médica e sem listas vem só com o essencial', async () =
       userId: 7,
       fullName: 'Rafael Andrade',
       viewerRole: 'POLICE',
+      hasHealthInsurance: null,
+      healthInsuranceNumber: null,
+      addresses: null,
       medicalRecord: null,
       illnesses: null,
       disorders: null,
@@ -109,6 +159,7 @@ test('perfil sem ficha médica e sem listas vem só com o essencial', async () =
   expect(patient.photoUrl).toBe('data:image/jpeg;base64,Zm90bw==');
   expect(patient.allergies).toBeUndefined();
   expect(patient.contacts).toBeUndefined();
+  expect(patient.healthInsurance).toBeUndefined();
   expect(patient.identification).toEqual({});
 });
 
